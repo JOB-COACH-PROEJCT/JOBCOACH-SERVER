@@ -1,3 +1,4 @@
+/*
 package org.v1.job_coach.config.auth;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,3 +31,4 @@ public class PrincipalDetailsService implements UserDetailsService {
         return null;
     }
 }
+*/

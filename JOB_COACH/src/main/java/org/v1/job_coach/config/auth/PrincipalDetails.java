@@ -1,3 +1,4 @@
+/*
 package org.v1.job_coach.config.auth;
 
 import lombok.Getter;
@@ -31,8 +32,12 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {    /* User 권한 return */
-        /* user의 권한(Role)은 Enum타입이라 Collection으로 반환해줄 수 없음 */
+    public Collection<? extends GrantedAuthority> getAuthorities() {    */
+/* User 권한 return *//*
+
+        */
+/* user의 권한(Role)은 Enum타입이라 Collection으로 반환해줄 수 없음 *//*
+
 
         Collection<GrantedAuthority> collect = new ArrayList<>();
         collect.add(new GrantedAuthority() {
@@ -43,7 +48,6 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         });
         return collect;
     }
-
 
     @Override
     public String getName() {
@@ -67,3 +71,4 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
 
 }
+*/

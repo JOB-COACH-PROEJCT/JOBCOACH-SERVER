@@ -1,86 +1,96 @@
 package org.v1.job_coach.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import java.util.stream.Collectors;
 
 @Getter
-@Entity
+@Setter
 @NoArgsConstructor
-public class User {
-
+@AllArgsConstructor
+@ToString
+@Entity
+@Table
+@Builder
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long pid;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column
+    @Column(nullable = false)
+    private String number;
+
+    @Column(nullable = false)
     private String password;
 
     @Column
-    private String provider;
+    @JsonIgnore
+    private String profile;
 
-    @Column
-    private String providerId;
-
-    @Column
-    private Role role;
-
-    @Column
-    private Timestamp created_at;
-
-    @Column
-    private Timestamp updated_at;
-
-    /* 일반 사용자 회원가입 */
-    public User(String name, String email, String password, Role role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    /* OAuth2 사용자 회원가입 */
-    public User(String name, String email, String password, String provider, String providerId, Role role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.provider = provider;
-        this.providerId = providerId;
-        this.role = role;
-    }
-
-    void update(String password) {
-        this.password = password;
-    }
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
 
     @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", role='" + role + '\'' +
-                '}';
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonIgnore
+    private List<Board> board;
 }
 
-
-/*
-
-필드:
-id: 사용자 고유 식별자
-email: 이메일 주소
-password: 비밀번호 (일반 회원가입 시)
-oauthProvider: 소셜 로그인 제공자 (구글, 네이버 등)
-name: 사용자 이름
-role: 사용자 역할 (예: USER, ADMIN)
-created_at: 계정 생성일
-updated_at: 계정 수정일*/

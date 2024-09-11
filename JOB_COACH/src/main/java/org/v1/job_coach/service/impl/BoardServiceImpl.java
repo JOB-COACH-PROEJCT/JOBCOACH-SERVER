@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.v1.job_coach.dto.board.BoardChangeDto;
 import org.v1.job_coach.dto.board.BoardRequestDto;
 import org.v1.job_coach.dto.board.BoardResponseDto;
-import org.v1.job_coach.entity.Board;
+import org.v1.job_coach.entity.community.Board;
 import org.v1.job_coach.entity.User;
 import org.v1.job_coach.exception.CustomException;
 import org.v1.job_coach.exception.Error;
-import org.v1.job_coach.repository.BoardRepository;
+import org.v1.job_coach.repository.community.BoardRepository;
 import org.v1.job_coach.service.BoardService;
 
 import java.time.LocalDateTime;

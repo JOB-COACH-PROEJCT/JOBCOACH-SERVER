@@ -14,7 +14,12 @@ public enum Error {
     USERNAME_ALREADY_TAKEN("이미 사용 중인 아이디입니다.", 409),
 
     BOARD_NOT_FOUND("게시글을 찾을 수 없습니다.",404),
-    NOT_AUTHOR("작성자만 게시글을 삭제할 수 있습니다.", 403);
+    NOT_AUTHOR("작성자만 게시글을 삭제할 수 있습니다.", 403),
+
+    NOT_FOUND_CHATROOM("존재하지 않는 채팅방입니다.", 404),
+    NOT_FOUND_QUESTION("존재하지 않는 질문입니다.", 404),
+
+    NOT_AUTHORIZED("해당 채팅방에 접근할 권한이 없습니다.", 403);
 
 
 

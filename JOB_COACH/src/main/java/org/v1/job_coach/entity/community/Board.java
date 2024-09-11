@@ -1,4 +1,4 @@
-package org.v1.job_coach.entity;
+package org.v1.job_coach.entity.community;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.v1.job_coach.dto.board.BoardChangeDto;
 import org.v1.job_coach.dto.board.BoardRequestDto;
 import org.v1.job_coach.dto.board.BoardResponseDto;
+import org.v1.job_coach.entity.User;
 
 import java.time.LocalDateTime;
 

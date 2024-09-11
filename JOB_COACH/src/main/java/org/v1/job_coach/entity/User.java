@@ -10,13 +10,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.v1.job_coach.entity.chat.ChatRoom;
+import org.v1.job_coach.entity.community.Board;
+
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Entity
 @Table
 @Builder
@@ -41,9 +44,18 @@ public class User implements UserDetails {
     @JsonIgnore
     private String profile;
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<ChatRoom> chatRooms = new ArrayList<>();
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonIgnore
+    private List<Board> board;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -88,9 +100,27 @@ public class User implements UserDetails {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "pid=" + pid +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", number='" + number + '\'' +
+                '}';
+    }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonIgnore
-    private List<Board> board;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(pid, user.pid); // ID를 기준으로 동등성 비교
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pid);
+    }
 }
 

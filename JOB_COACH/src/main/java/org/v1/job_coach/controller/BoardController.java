@@ -16,7 +16,7 @@ import org.v1.job_coach.entity.User;
 import org.v1.job_coach.service.BoardService;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/board")
 public class BoardController {
 
         private final Logger logger = LoggerFactory.getLogger(BoardController.class);
@@ -27,9 +27,9 @@ public class BoardController {
             this.boardService = boardService;
         }
 
-        @GetMapping("/board")
-        public ResponseEntity<BoardResponseDto> getBoard(Long id){
-            BoardResponseDto boardResponseDto =boardService.getContent(id);
+        @GetMapping("/{board_id}")
+        public ResponseEntity<BoardResponseDto> getBoard(@PathVariable Long board_id){
+            BoardResponseDto boardResponseDto =boardService.getContent(board_id);
             return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
         }
         @Parameters({@Parameter(name = "Authorization", description = "로그인 성공 후 발급 받은 access_token", required = true)})
@@ -40,7 +40,7 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
         }
         @Parameters({@Parameter(name = "Authorization", description = "로그인 성공 후 발급 받은 access_token", required = true)})
-        @PutMapping("/board")
+        @PutMapping("/board/")
         public ResponseEntity<BoardResponseDto> changeBoard(@AuthenticationPrincipal User user,
                                                             @RequestBody BoardChangeDto boardChangeDto){
 

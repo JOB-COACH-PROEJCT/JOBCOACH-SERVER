@@ -1,6 +1,6 @@
 package org.v1.job_coach.dto.board;
 
-import org.v1.job_coach.entity.Board;
+import org.v1.job_coach.entity.community.Board;
 import org.v1.job_coach.entity.User;
 
 import java.time.LocalDateTime;

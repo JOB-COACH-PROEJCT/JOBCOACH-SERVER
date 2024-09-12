@@ -17,6 +17,7 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 1000)
     private String content;
 
     @ManyToOne
@@ -33,6 +34,7 @@ public class Answer {
     private User user;
 
     @OneToOne(mappedBy = "answer")
+    @JoinColumn(name = "consulting_id") //오류뜨면 얘때문에
     @JsonIgnore
     private Consulting consulting;
 
@@ -46,8 +48,7 @@ public class Answer {
     void theQuestion(Question question) {
         this.question = question;
     }
-
-/*    public Answer addConsulting(Consulting consulting) {
-        return
-    }*/
+    public void addConsulting(Consulting consulting) {
+        this.consulting = consulting;
+    }
 }

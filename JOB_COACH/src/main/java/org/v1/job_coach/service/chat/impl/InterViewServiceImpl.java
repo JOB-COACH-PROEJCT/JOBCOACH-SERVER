@@ -1,4 +1,4 @@
-package org.v1.job_coach.service.chat.Impl;
+package org.v1.job_coach.service.chat.impl;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,7 @@ public class InterViewServiceImpl implements InterViewService {
         return questionRepository.findRandomQuestion(PageRequest.of(0, 1)).getContent().get(0);
     }
     @Override
-    public void saveAnswer(User user, AnswerRequestDto answerRequestDto, Long chatRoomId) {
+    public Answer saveAnswer(User user, AnswerRequestDto answerRequestDto, Long chatRoomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_CHATROOM));
         isOwner(chatRoom, user);
@@ -60,7 +60,7 @@ public class InterViewServiceImpl implements InterViewService {
                 .orElseThrow(() -> new CustomException(Error.NOT_FOUND_QUESTION));
         Answer answer = new Answer(answerRequestDto.answerContent(), chatRoom, question, user);
         question.addAnswer(answer);
-        answerRepository.save(answer);
+        return answerRepository.save(answer);
     }
     @Override
     public void deleteChatRoom(User user, Long chatRoomId) {
@@ -68,6 +68,11 @@ public class InterViewServiceImpl implements InterViewService {
         isOwner(chatRoom, user);
         chatRoomRepository.delete(chatRoom);
     }
+
+    public void consultingInjection(Answer answer, Consulting consulting) {
+        answer.addConsulting(consulting);
+    }
+
     public void isOwner(ChatRoom chatRoom, User user) {
         if (!chatRoom.isOwner(user)) {
             throw new CustomException(Error.NOT_AUTHORIZED);

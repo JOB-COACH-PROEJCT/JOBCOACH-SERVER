@@ -1,4 +1,3 @@
-/*
 package org.v1.job_coach.dto.user.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,4 +15,4 @@ public record UserUpdateResponse(
         return new UserUpdateResponse(result, user.getPassword(), user.getEmail());
     }
 }
-*/
+

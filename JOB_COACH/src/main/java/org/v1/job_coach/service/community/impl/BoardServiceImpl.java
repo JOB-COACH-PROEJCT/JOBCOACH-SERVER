@@ -1,4 +1,4 @@
-package org.v1.job_coach.service.impl;
+package org.v1.job_coach.service.community.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -13,13 +13,13 @@ import org.v1.job_coach.entity.User;
 import org.v1.job_coach.exception.CustomException;
 import org.v1.job_coach.exception.Error;
 import org.v1.job_coach.repository.community.BoardRepository;
-import org.v1.job_coach.service.BoardService;
+import org.v1.job_coach.service.community.BoardService;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class BoardServiceImpl implements BoardService{
+public class BoardServiceImpl implements BoardService {
 
     private final Logger logger = LoggerFactory.getLogger(BoardService.class);
 

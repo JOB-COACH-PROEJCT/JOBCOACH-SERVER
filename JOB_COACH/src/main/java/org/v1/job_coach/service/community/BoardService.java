@@ -1,4 +1,4 @@
-package org.v1.job_coach.service;
+package org.v1.job_coach.service.community;
 
 
 import org.v1.job_coach.dto.board.BoardChangeDto;

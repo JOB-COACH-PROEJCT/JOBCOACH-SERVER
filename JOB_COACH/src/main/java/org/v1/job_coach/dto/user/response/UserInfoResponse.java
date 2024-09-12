@@ -1,9 +1,6 @@
-/*
 package org.v1.job_coach.dto.user.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.v1.job_coach.entity.Role;
-import org.v1.job_coach.entity.User;
 
 import java.sql.Timestamp;
 
@@ -17,13 +14,12 @@ public record UserInfoResponse(
         @Schema(description = "회원 생성일", example = "2023-05-11T15:00:00")
         Timestamp createdAt
 ) {
-    public static UserInfoResponse toDto(User user) {
+/*    public static UserInfoResponse toDto(User user) {
         return new UserInfoResponse(
                 user.getEmail(),
                 user.getName(),
                 user.getRole(),
                 user.getCreated_at()
         );
-    }
+    }*/
 }
-*/

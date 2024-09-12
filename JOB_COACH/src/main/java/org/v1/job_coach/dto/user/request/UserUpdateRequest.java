@@ -1,4 +1,3 @@
-/*
 package org.v1.job_coach.dto.user.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,4 +11,3 @@ public record UserUpdateRequest(
         String email
 ) {
 }
-*/

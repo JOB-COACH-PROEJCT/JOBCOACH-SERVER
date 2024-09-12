@@ -13,7 +13,7 @@ import org.v1.job_coach.dto.board.BoardChangeDto;
 import org.v1.job_coach.dto.board.BoardRequestDto;
 import org.v1.job_coach.dto.board.BoardResponseDto;
 import org.v1.job_coach.entity.User;
-import org.v1.job_coach.service.BoardService;
+import org.v1.job_coach.service.community.BoardService;
 
 @RestController
 @RequestMapping("/api/v1/board")

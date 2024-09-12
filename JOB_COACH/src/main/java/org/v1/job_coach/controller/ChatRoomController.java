@@ -11,8 +11,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.v1.job_coach.dto.chat.AnswerRequestDto;
 import org.v1.job_coach.entity.User;
+import org.v1.job_coach.entity.chat.Answer;
 import org.v1.job_coach.entity.chat.ChatRoom;
+import org.v1.job_coach.entity.chat.Consulting;
 import org.v1.job_coach.entity.chat.Question;
+import org.v1.job_coach.service.ConsultingService;
 import org.v1.job_coach.service.chat.InterViewService;
 
 
@@ -22,10 +25,12 @@ import org.v1.job_coach.service.chat.InterViewService;
 public class ChatRoomController {
 
     private final InterViewService interViewService;
+    private final ConsultingService consultingService;
 
-    public ChatRoomController(InterViewService interViewService) {
+    public ChatRoomController(InterViewService interViewService, ConsultingService consultingService) {
         this.interViewService = interViewService;
 
+        this.consultingService = consultingService;
     }
 
     @PostMapping("/chat-rooms")
@@ -50,9 +55,12 @@ public class ChatRoomController {
     @Parameters({@Parameter(name = "Authorization", description = "로그인 성공 후 발급 받은 access_token", required = true)})
     public ResponseEntity<?> saveAnswer(@AuthenticationPrincipal User user,
                                         @PathVariable Long chatRoomId,
-                                        @RequestBody AnswerRequestDto answerRequestDto) {
-        interViewService.saveAnswer(user, answerRequestDto, chatRoomId);
-        log.info("[Answer 저장] User: {}, Answer: {}", user, answerRequestDto.answerContent());
+                                        @RequestBody AnswerRequestDto answerRequestDto) throws Exception {
+        Answer answer = interViewService.saveAnswer(user, answerRequestDto, chatRoomId);
+        Consulting consulting = consultingService.processConsulting(answer);
+        interViewService.consultingInjection(answer, consulting);
+
+        log.info("[Answer 저장] User: {}, Answer: {}, consulting: {}", user, answerRequestDto.answerContent(), consulting.getFeedback());
         return ResponseEntity.status(HttpStatus.CREATED).body("답변을 성공적으로 저장하였습니다.");
     }
 

@@ -1,15 +1,14 @@
-package org.v1.job_coach.service.impl;
+package org.v1.job_coach.service.chat.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.v1.job_coach.service.GptService;
+import org.v1.job_coach.service.chat.GptService;
 
 import java.util.Collections;
 import java.util.HashMap;

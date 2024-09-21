@@ -1,6 +1,5 @@
 package org.v1.job_coach.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.v1.job_coach.dto.SignDto.SignInResultDto;
 import org.v1.job_coach.dto.SignDto.SignUpDto;
 import org.v1.job_coach.dto.SignDto.SignUpResultDto;
-import org.v1.job_coach.service.SignService;
+import org.v1.job_coach.service.user.SignService;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package org.v1.job_coach.service.impl;
+package org.v1.job_coach.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

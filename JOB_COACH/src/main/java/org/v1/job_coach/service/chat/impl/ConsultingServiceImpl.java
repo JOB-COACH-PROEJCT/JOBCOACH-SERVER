@@ -1,4 +1,4 @@
-package org.v1.job_coach.service.impl;
+package org.v1.job_coach.service.chat.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +13,7 @@ import org.v1.job_coach.exception.CustomException;
 import org.v1.job_coach.exception.Error;
 import org.v1.job_coach.repository.chat.AnswerRepository;
 import org.v1.job_coach.repository.chat.ConsultingRepository;
-import org.v1.job_coach.service.ConsultingService;
+import org.v1.job_coach.service.chat.ConsultingService;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -27,32 +27,32 @@ public class BoardController {
             this.boardService = boardService;
         }
 
-        @GetMapping("/{board_id}")
+        @GetMapping("{board_id}")
         public ResponseEntity<BoardResponseDto> getBoard(@PathVariable Long board_id){
             BoardResponseDto boardResponseDto =boardService.getContent(board_id);
             return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
         }
         @Parameters({@Parameter(name = "Authorization", description = "로그인 성공 후 발급 받은 access_token", required = true)})
-        @PostMapping("/board")
+        @PostMapping
         public ResponseEntity<BoardResponseDto> saveBoard(@AuthenticationPrincipal User user,
                                                           @RequestBody BoardRequestDto boardRequestDto){
             BoardResponseDto boardResponseDto = boardService.saveBoard(boardRequestDto, user);
             return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
         }
         @Parameters({@Parameter(name = "Authorization", description = "로그인 성공 후 발급 받은 access_token", required = true)})
-        @PutMapping("/board/")
+        @PutMapping("{board_id}")
         public ResponseEntity<BoardResponseDto> changeBoard(@AuthenticationPrincipal User user,
+                                                            @PathVariable Long board_id,
                                                             @RequestBody BoardChangeDto boardChangeDto){
-
-            BoardResponseDto boardResponseDto = boardService.changeBoard(boardChangeDto, user);
+            BoardResponseDto boardResponseDto = boardService.changeBoard(board_id, boardChangeDto, user);
 
             return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
         }
         @Parameters({@Parameter(name = "Authorization", description = "로그인 성공 후 발급 받은 access_token", required = true)})
-        @DeleteMapping("/board")
+        @DeleteMapping("{board_id}")
         public ResponseEntity<String> deleteBoard(@AuthenticationPrincipal User user,
-                                                  @RequestParam Long id){
-            boardService.deleteBoard(id, user);
+                                                  @PathVariable Long board_id){
+            boardService.deleteBoard(board_id, user);
             return ResponseEntity.status(HttpStatus.OK).body("게시글을 성공적으로 삭제하였습니다.");
         }
 

@@ -11,7 +11,7 @@ public interface BoardService {
 
     BoardResponseDto saveBoard(BoardRequestDto boardRequestDto, User user);
     BoardResponseDto changeBoard(Long id, String title, String content);
-    BoardResponseDto changeBoard(BoardChangeDto boardChangeDto, User user);
+    BoardResponseDto changeBoard(Long boardId, BoardChangeDto boardChangeDto, User user);
     void deleteBoard(Long id);
 
     void deleteBoard(Long id, User user);

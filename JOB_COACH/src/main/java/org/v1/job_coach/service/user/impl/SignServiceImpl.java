@@ -1,9 +1,7 @@
-package org.v1.job_coach.service.impl;
+package org.v1.job_coach.service.user.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.v1.job_coach.dto.CommonResponse;
@@ -13,7 +11,7 @@ import org.v1.job_coach.dto.SignDto.SignUpResultDto;
 import org.v1.job_coach.entity.User;
 import org.v1.job_coach.repository.UserRepository;
 import org.v1.job_coach.security.jwt.JwtTokenProvider;
-import org.v1.job_coach.service.SignService;
+import org.v1.job_coach.service.user.SignService;
 
 import java.util.Collections;
 

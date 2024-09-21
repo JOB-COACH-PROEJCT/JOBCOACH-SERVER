@@ -1,4 +1,4 @@
-package org.v1.job_coach.service;
+package org.v1.job_coach.service.user;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

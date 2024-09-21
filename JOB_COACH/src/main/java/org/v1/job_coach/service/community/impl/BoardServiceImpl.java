@@ -69,10 +69,10 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardResponseDto changeBoard(BoardChangeDto boardChangeDto, User user) {
+    public BoardResponseDto changeBoard(Long id, BoardChangeDto boardChangeDto, User user) {
         logger.info("[changeBoard] : 게시글 수정");
 
-        Board findBoard = boardRepository.findById(boardChangeDto.id()).orElseThrow(() -> new CustomException(Error.BOARD_NOT_FOUND));
+        Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomException(Error.BOARD_NOT_FOUND));
         if (!findBoard.getUser().getPid().equals(user.getPid())){
             throw new CustomException(Error.ACCESS_DENIED);
         }

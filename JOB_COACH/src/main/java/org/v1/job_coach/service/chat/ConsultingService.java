@@ -1,4 +1,4 @@
-package org.v1.job_coach.service;
+package org.v1.job_coach.service.chat;
 
 import org.springframework.stereotype.Service;
 import org.v1.job_coach.entity.chat.Answer;

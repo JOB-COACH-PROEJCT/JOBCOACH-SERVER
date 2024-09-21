@@ -24,10 +24,13 @@ import org.v1.job_coach.security.jwt.JwtTokenProvider;
 @Configuration
 @EnableWebSecurity /* ->스프링 시큐리티 필터가 스프링 필터체인에 등록된다. */
 public class SecurityConfig {
-
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
+    public SecurityConfig(CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler, JwtTokenProvider jwtTokenProvider) {
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -56,8 +59,8 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 아래 라인에서 exceptionHandling()을 한 번만 호출하도록 변경
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .accessDeniedHandler(new CustomAccessDeniedHandler())
-                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 

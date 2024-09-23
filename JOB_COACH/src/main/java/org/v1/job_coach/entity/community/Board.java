@@ -46,5 +46,11 @@ public class Board {
         return BoardResponseDto.toDto(this);
     }
 
+    public Board(Long id, String title, LocalDateTime createDate) {
+        this.id = id;
+        this.title = title;
+        this.createDate = createDate;
+    }
+
 
 }

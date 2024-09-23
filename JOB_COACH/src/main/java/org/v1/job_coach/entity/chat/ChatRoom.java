@@ -36,6 +36,11 @@ public class ChatRoom {
         this.status = status;
     }
 
+    public ChatRoom(Long pid, String roomName) {
+        this.id = pid;
+        this.roomName = roomName;
+    }
+
     public void changeChatRoomName(String roomName) {
         this.roomName = roomName;
     }

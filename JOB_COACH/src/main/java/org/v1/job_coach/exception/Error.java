@@ -10,8 +10,10 @@ public enum Error {
 
 
     INVALID_CREDENTIALS("아이디 또는 비밀번호가 일치하지 않습니다.", 400),
+    INVALID_PASSWORD("비밀번호가 일치하지 않습니다.", 400),
     USERNAME_ALREADY_TAKEN("이미 사용 중인 아이디입니다.", 409),
 
+    DUPLICATE_USER("이미 가입 된 유저입니다.", 400),
     BOARD_NOT_FOUND("게시글을 찾을 수 없습니다.",404),
     NOT_FOUND_REVIEW("면접후기를 찾을 수 없습니다",404),
     NOT_AUTHOR("작성자만 게시글을 삭제할 수 있습니다.", 403),

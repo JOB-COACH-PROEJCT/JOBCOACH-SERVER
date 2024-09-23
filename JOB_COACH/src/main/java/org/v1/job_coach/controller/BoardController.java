@@ -2,6 +2,7 @@ package org.v1.job_coach.controller;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.v1.job_coach.dto.board.BoardResponseDto;
 import org.v1.job_coach.entity.User;
 import org.v1.job_coach.service.community.BoardService;
 
+@Tag(name = "Boards", description = "커뮤니티 API")
 @RestController
 @RequestMapping("/api/v1/board")
 public class BoardController {

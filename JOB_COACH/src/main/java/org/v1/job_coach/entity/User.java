@@ -10,10 +10,17 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.v1.job_coach.dto.SignDto.SignUpDto;
+import org.v1.job_coach.dto.board.BoardChangeDto;
+import org.v1.job_coach.dto.board.BoardResponseDto;
+import org.v1.job_coach.dto.user.request.UserUpdateRequest;
+import org.v1.job_coach.dto.user.response.UserUpdateResponse;
 import org.v1.job_coach.entity.chat.ChatRoom;
 import org.v1.job_coach.entity.community.Board;
 import org.v1.job_coach.entity.review.Review;
@@ -26,12 +33,27 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table
+
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "isActive"})})
 @Builder
 public class User implements UserDetails {
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pid;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column
+    private boolean isActive = true;
+
+    @Column
+    private LocalDateTime deactivatedAt; // 비활성화된 날짜
 
     @Column(nullable = false)
     @NotBlank(message = "사용자 이름은 필수 항목입니다.")
@@ -40,7 +62,7 @@ public class User implements UserDetails {
 
     @Email(message = "유효한 이메일 주소를 입력해 주세요.")
     @NotBlank(message = "이메일은 필수 항목입니다.")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @NotBlank(message = "비밀번호는 필수 항목입니다.")
@@ -57,15 +79,15 @@ public class User implements UserDetails {
     @JsonIgnore
     private String profile;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<ChatRoom> chatRooms = new ArrayList<>(); // 유저가 생성한 채팅룸
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Board> board;  // 유저가 작성한 게시글 리스트
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;  // 유저가 작성한 후기 리스트
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -143,6 +165,27 @@ public class User implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(pid);
+    }
+
+    public boolean updateUser(UserUpdateRequest updateRequest, String password) {
+        this.password = password;
+        this.number = updateRequest.phoneNumber();
+        this.profile = updateRequest.profileUrl();
+        return true;
+    }
+
+    public void deactivate(){
+        this.isActive = false;
+        this.deactivatedAt = LocalDateTime.now();
+    }
+
+    public void activate(SignUpDto signUpDto, String password){
+        this.isActive = true;
+        this.number = signUpDto.number();
+        this.password = password;
+        this.name = signUpDto.name();
+        this.profile = signUpDto.profile();
+        this.deactivatedAt = null;
     }
 }
 

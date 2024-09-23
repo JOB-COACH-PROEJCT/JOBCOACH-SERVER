@@ -66,6 +66,14 @@ public class Review {
         this.user = user;
     }
 
+    public Review(Long id, String title, String companyName, LocalDateTime createDate){
+        this.id = id;
+        this.title = title;
+        this.companyName = companyName;
+        this.createDate = createDate;
+        this.createDate = LocalDateTime.now();
+    }
+
     public void update(RequestReviewDto requestReviewDto) {
         this.title = requestReviewDto.title();
         this.companyName = requestReviewDto.companyName();

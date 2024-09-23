@@ -4,12 +4,11 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
-@Getter
-@Setter
-public class SignUpDto {
-    private String email;
-    private String number;
-    private String password;
-    private String name;
+public record SignUpDto (
+        String name,
+        String email,
+        String number,
+        String password,
+        String profile
+){
 }

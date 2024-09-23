@@ -33,7 +33,7 @@ public class Answer {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(mappedBy = "answer")
+    @OneToOne(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "consulting_id") //오류뜨면 얘때문에
     @JsonIgnore
     private Consulting consulting;

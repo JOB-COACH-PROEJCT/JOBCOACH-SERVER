@@ -40,6 +40,8 @@ public class UserServiceImpl implements UserService {
     public UserInfoResponse getUserInfo(User user) {
         return UserInfoResponse.toDto(isUserValid(user));
     }
+    
+
     @Override
     @Transactional
     public UserUpdateResponse updateUserInfo(User user, UserUpdateRequest updateRequest) {
@@ -50,8 +52,12 @@ public class UserServiceImpl implements UserService {
         }
         String encode = passwordEncoder.encode(updateRequest.updatePassword());
         boolean isUpdate = findUser.updateUser(updateRequest, encode);
+
+
+
         return UserUpdateResponse.toDto(findUser, isUpdate);
     }
+
     @Override
     @Transactional
     public UserDeleteResponse deleteUser(User user) {

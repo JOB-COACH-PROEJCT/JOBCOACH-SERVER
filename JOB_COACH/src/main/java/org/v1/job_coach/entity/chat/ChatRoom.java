@@ -26,10 +26,13 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answerList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    private List<ChatRoomQuestion> chatRoomQuestions = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private ChatRoomStatus status;
 
-    public ChatRoom(String roomName, User user, List<Answer> answerList, ChatRoomStatus status) {
+    public ChatRoom(String roomName, User user, List<Answer> answerList,List<Question> questions, ChatRoomStatus status) {
         this.roomName = roomName;
         this.user = user;
         this.answerList = answerList;
@@ -39,6 +42,17 @@ public class ChatRoom {
     public ChatRoom(Long pid, String roomName) {
         this.id = pid;
         this.roomName = roomName;
+    }
+
+    public ChatRoom(String roomName, User user, ChatRoomStatus status) {
+        this.roomName = roomName;
+        this.user = user;
+        this.status = status;
+    }
+
+    public void addQuestion(Question question) {
+        ChatRoomQuestion chatRoomQuestion = new ChatRoomQuestion(this, question);
+        chatRoomQuestions.add(chatRoomQuestion);
     }
 
     public void changeChatRoomName(String roomName) {

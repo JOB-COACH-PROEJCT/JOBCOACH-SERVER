@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.v1.job_coach.entity.User;
+import org.v1.job_coach.entity.consulting.Consulting;
 
 @Entity
 @Getter

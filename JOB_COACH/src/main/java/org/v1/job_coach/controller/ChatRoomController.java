@@ -12,11 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import org.v1.job_coach.dto.chat.AnswerRequestDto;
 import org.v1.job_coach.entity.User;
 import org.v1.job_coach.entity.chat.Answer;
-import org.v1.job_coach.entity.chat.ChatRoom;
-import org.v1.job_coach.entity.chat.Consulting;
+import org.v1.job_coach.entity.consulting.Consulting;
 import org.v1.job_coach.entity.chat.Question;
 import org.v1.job_coach.service.chat.ConsultingService;
-import org.v1.job_coach.service.chat.InterViewService;
+import org.v1.job_coach.service.chat.ChatRoomService;
 
 
 @Slf4j
@@ -25,29 +24,31 @@ import org.v1.job_coach.service.chat.InterViewService;
 @RequestMapping("/api/v1/interview")
 public class ChatRoomController {
 
-    private final InterViewService interViewService;
+    private final ChatRoomService chatRoomService;
     private final ConsultingService consultingService;
 
-    public ChatRoomController(InterViewService interViewService, ConsultingService consultingService) {
-        this.interViewService = interViewService;
+    public ChatRoomController(ChatRoomService chatRoomService, ConsultingService consultingService) {
+        this.chatRoomService = chatRoomService;
 
         this.consultingService = consultingService;
     }
+    /* 모의 면접 채팅방을 모두 반환하는 컨트롤러 생성해야 함 */
+
     @PostMapping("/chat-rooms")
     @Operation(summary = "모의면접 생성 API", description = "모의면접 채팅방을 생성하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
+    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true),})
     public ResponseEntity<?> createChatRoom(@AuthenticationPrincipal User user,
                                             @RequestParam String roomName) {
-        ChatRoom chatRoom = interViewService.createChatRoom(user, roomName);
+        chatRoomService.createChatRoom(user, roomName);
         log.info("[ChatRoom 생성] user: {}, roomName: {}", user, roomName);
-        return ResponseEntity.status(HttpStatus.CREATED).body(chatRoom);
+        return ResponseEntity.status(HttpStatus.CREATED).body("모의면접 채팅방을 성공적으로 생성하였습니다.");
     }
     @PutMapping("/chat-rooms/{chatRoomId}/deactivate")
     @Operation(summary = "모의면접 종료 API", description = "모의면접 채팅을 종료하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> endChatRoom(@AuthenticationPrincipal User user,
                                          @PathVariable Long chatRoomId) {
-        interViewService.deactivateChatRoom(user, chatRoomId);
+        chatRoomService.deactivateChatRoom(user, chatRoomId);
         log.info("[ChatRoom 종료] chatRoomId: {}", chatRoomId);
         return ResponseEntity.status(HttpStatus.OK).body("모의면접을 종료합니다.");
     }
@@ -57,27 +58,28 @@ public class ChatRoomController {
     public ResponseEntity<?> saveAnswer(@AuthenticationPrincipal User user,
                                         @PathVariable Long chatRoomId,
                                         @RequestBody AnswerRequestDto answerRequestDto) throws Exception {
-        Answer answer = interViewService.saveAnswer(user, answerRequestDto, chatRoomId);
+        Answer answer = chatRoomService.saveAnswer(user, answerRequestDto, chatRoomId);
         Consulting consulting = consultingService.processConsulting(answer);
         //답변을 바탕으로 컨설팅 작업 -> 컨설팅 저장
-        interViewService.consultingInjection(answer, consulting);
+        chatRoomService.consultingInjection(answer, consulting);
         log.info("[Answer 저장] User: {}, Answer: {}, consulting: {}", user, answerRequestDto.answerContent(), consulting.getFeedback());
         return ResponseEntity.status(HttpStatus.CREATED).body("답변을 성공적으로 저장하였습니다.");
     }
     @GetMapping("/chat-rooms/{chatRoomId}/questions")
     @Operation(summary = "모의면접 질문 반환 API", description = "모의면접 질문을 반환하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
-    public ResponseEntity<?> getQuestion() {
-        Question randomQuestion = interViewService.getRandomQuestion();
-        log.info("[Question 반환] Question: {}", randomQuestion);
-        return ResponseEntity.status(HttpStatus.OK).body(randomQuestion);
+    public ResponseEntity<?> getQuestion(@PathVariable Long chatRoomId) {
+        log.info("채빙탕 ID {} -> 질문 요청", chatRoomId);
+        log.info("[Question 반환] Question: {}", chatRoomService.getRandomQuestion());
+        return ResponseEntity.status(HttpStatus.OK).body(chatRoomService.getRandomQuestion());
     }
+
     @DeleteMapping("/chat-rooms/{chatRoomId}")
     @Operation(summary = "모의면접 채팅방 삭제 API", description = "모의면접 채팅방을 삭제하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> deleteChatRoom(@AuthenticationPrincipal User user,
                                             @PathVariable Long chatRoomId) {
-        interViewService.deleteChatRoom(user, chatRoomId);
+        chatRoomService.deleteChatRoom(user, chatRoomId);
         log.info("[ChatRoom 삭제] User: {}, chatRoomId: {}", user, chatRoomId);
         return ResponseEntity.status(HttpStatus.OK).body("채팅방을 성공적으로 삭제하였습니다.");
     }

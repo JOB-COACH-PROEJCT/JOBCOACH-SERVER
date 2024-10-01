@@ -1,6 +1,7 @@
 package org.v1.job_coach.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -17,12 +18,11 @@ import java.util.Collection;
 import java.util.List;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.v1.job_coach.dto.SignDto.SignUpDto;
-import org.v1.job_coach.dto.board.BoardChangeDto;
-import org.v1.job_coach.dto.board.BoardResponseDto;
 import org.v1.job_coach.dto.user.request.UserUpdateRequest;
-import org.v1.job_coach.dto.user.response.UserUpdateResponse;
 import org.v1.job_coach.entity.chat.ChatRoom;
+import org.v1.job_coach.entity.consulting.Consulting;
 import org.v1.job_coach.entity.community.Board;
+import org.v1.job_coach.entity.community.Comment;
 import org.v1.job_coach.entity.review.Review;
 
 import java.util.Objects;
@@ -31,11 +31,10 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
-
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "isActive"})})
 @Builder
+@AllArgsConstructor
 public class User implements UserDetails {
     @PrePersist
     protected void onCreate() {
@@ -81,14 +80,22 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    private List<Consulting> ConsultingList = new ArrayList<>(); // 유저가 생성한 채팅룸
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ChatRoom> chatRooms = new ArrayList<>(); // 유저가 생성한 채팅룸
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Board> board;  // 유저가 작성한 게시글 리스트
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // 이 User가 작성한 Board들을 관리
+    private List<Board> board;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;  // 유저가 작성한 후기 리스트
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // 이 User가 작성한 Comment들을 관리
+    private List<Comment> comments;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

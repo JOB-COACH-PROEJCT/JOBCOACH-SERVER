@@ -12,7 +12,7 @@ import org.v1.job_coach.service.chat.GptService;
 
 @RestController
 @Tag(name = "Ai", description = "Consulting Ai 테스트 API")
-@RequestMapping("/api/v1/gpt")
+@RequestMapping("/api/v1/ai-test")
 public class GptController {
 
     private final GptService gptService;

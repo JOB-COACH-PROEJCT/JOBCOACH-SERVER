@@ -1,5 +1,6 @@
 package org.v1.job_coach.dto.board;
 
+import org.v1.job_coach.dto.user.UserResponseDto;
 import org.v1.job_coach.entity.community.Board;
 import org.v1.job_coach.entity.User;
 
@@ -11,9 +12,9 @@ public record BoardResponseDto(
         String content,
         LocalDateTime createAt,
         LocalDateTime updateAt,
-        User user
+        UserResponseDto userResponseDto
 ) {
     public static BoardResponseDto toDto(Board board) {
-        return new BoardResponseDto(board.getId(), board.getTitle(), board.getContent(), board.getCreateDate(), board.getUpdateDate(), board.getUser());
+        return new BoardResponseDto(board.getId(), board.getTitle(), board.getContent(), board.getCreateDate(), board.getUpdateDate(), UserResponseDto.toDto(board.getUser()));
     }
 }

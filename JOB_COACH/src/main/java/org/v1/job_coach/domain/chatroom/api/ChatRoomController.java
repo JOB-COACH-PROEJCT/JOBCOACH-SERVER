@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.v1.job_coach.domain.answer.domain.Answer;
 import org.v1.job_coach.domain.answer.dto.request.AnswerRequestDto;
 import org.v1.job_coach.domain.chatroom.application.ChatRoomService;
+import org.v1.job_coach.domain.chatroom.dto.response.QuestionResponseDto;
 import org.v1.job_coach.domain.consulting.application.ConsultingService;
 import org.v1.job_coach.domain.consulting.domain.Consulting;
 import org.v1.job_coach.user.domain.User;
@@ -66,10 +67,12 @@ public class ChatRoomController {
     @GetMapping("/chat-rooms/{chatRoomId}/questions")
     @Operation(summary = "모의면접 질문 반환 API", description = "모의면접 질문을 반환하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
-    public ResponseEntity<?> getQuestion(@PathVariable Long chatRoomId) {
+    public ResponseEntity<?> getQuestion(@AuthenticationPrincipal User user, @PathVariable Long chatRoomId) {
         log.info("채빙탕 ID {} -> 질문 요청", chatRoomId);
-        log.info("[Question 반환] Question: {}", chatRoomService.getRandomQuestion());
-        return ResponseEntity.status(HttpStatus.OK).body(chatRoomService.getRandomQuestion());
+
+        QuestionResponseDto randomQuestion = chatRoomService.getRandomQuestion(user, chatRoomId);
+        log.info("[Question 반환] Question: {}", randomQuestion);
+        return ResponseEntity.status(HttpStatus.OK).body(randomQuestion);
     }
 
     @DeleteMapping("/chat-rooms/{chatRoomId}")

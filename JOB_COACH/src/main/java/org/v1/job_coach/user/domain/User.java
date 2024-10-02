@@ -86,14 +86,14 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<ChatRoom> chatRooms = new ArrayList<>(); // 유저가 생성한 채팅룸
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // 이 User가 작성한 Board들을 관리
     private List<Board> board;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;  // 유저가 작성한 후기 리스트
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // 이 User가 작성한 Comment들을 관리
     private List<Comment> comments;
 

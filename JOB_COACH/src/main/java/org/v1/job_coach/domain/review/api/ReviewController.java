@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.v1.job_coach.domain.review.application.ReviewService;
 import org.v1.job_coach.domain.review.dto.request.ReviewRequestDto;
+import org.v1.job_coach.domain.review.dto.response.ReviewDetailResponseDto;
 import org.v1.job_coach.domain.review.dto.response.ReviewResponseDto;
 import org.v1.job_coach.user.domain.User;
 
@@ -78,15 +79,19 @@ public class ReviewController {
                                           /*@Valid */ReviewRequestDto updateDto,
                                           @AuthenticationPrincipal User user){
 
-        log.info("companyName: {} ", updateDto.companyName());
-        log.info("process: {} ", updateDto.process());
-        log.info("interview: {} ", updateDto.interviewQuestions());
-        log.info("evaluation: {}", updateDto.evaluation());
-        log.info("result: {}", updateDto.result());
-
         reviewService.updateReview(review_id, updateDto, user.getPid());
         return ResponseEntity.status(HttpStatus.OK).body("면접 후기를 성공적으로 수정하였습니다.");
     }
+
+    @GetMapping("/{review_id}")
+    @Operation(summary = "상세 면접 후기 조회 API", description = "상세 면접 후기를 반환하는 API 입니다.")
+    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
+    public ResponseEntity<?> getReview(@AuthenticationPrincipal User user,
+                                       @PathVariable Long review_id){
+        ReviewDetailResponseDto reviewDetail = reviewService.getReviewById(user, review_id);
+        return ResponseEntity.status(HttpStatus.OK).body(reviewDetail);
+    }
+
     @DeleteMapping("/{review_id}")
     @Operation(summary = "면접 후기 삭제 API", description = "면접 후기를 삭제하는 API 입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})

@@ -67,9 +67,10 @@ public class ReviewServiceImpl implements ReviewService {
     }
     @Override
     @Transactional
-    public ReviewDetailResponseDto getReviewById(Long id) {
-        Review review = isReviewPresent(id);
-        return ReviewDetailResponseDto.toDto(review);
+    public ReviewDetailResponseDto getReviewById(User user, Long id) {
+
+        isLogin(user);
+        return ReviewDetailResponseDto.toDto(isReviewPresent(id));
     }
 
     @Transactional
@@ -96,6 +97,10 @@ public class ReviewServiceImpl implements ReviewService {
         if (!review.getUser().getPid().equals(userId)) {
             throw new CustomException(Error.NOT_AUTHORIZED);
         }
+    }
+
+    private void isLogin(User user) {
+        userRepository.findById(user.getPid()).orElseThrow(() -> new CustomException(Error.ACCESS_DENIED));
     }
 
 }

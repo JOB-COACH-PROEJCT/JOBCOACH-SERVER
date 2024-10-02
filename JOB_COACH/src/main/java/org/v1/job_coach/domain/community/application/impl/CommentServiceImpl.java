@@ -39,8 +39,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentResponseDto saveComment(Long boardId, CommentRequestDto dto, User user) {
         isLogin(user);
 
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(null));
+        Board board = isBoardPresent(boardId);
 
         Comment comment = new Comment(dto, user, board);
         commentRepository.save(comment);
@@ -49,11 +48,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Transactional
-    public CommentResponseDto updateComment(Long commentId, CommentRequestDto dto, User user) {
+    public CommentResponseDto updateComment(Long commentId, CommentRequestDto dto, User user, Long boardId) {
         isLogin(user);
         isAccess(user, commentId);
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(null));
+        Comment comment= isCommentPresent(commentId);
 
         comment.updateContent(dto.content());
         commentRepository.save(comment);
@@ -62,13 +60,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Transactional
-    public void deleteComment(Long commentId, User user) {
+    public void deleteComment(Long commentId, User user, Long boardId) {
         isLogin(user);
         isAccess(user, commentId);
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(null));
-
-        commentRepository.delete(comment);
+        isBoardPresent(boardId);
+        Comment comment = isCommentPresent(commentId); // 댓글을 영속성 컨텍스트에서 로드
+        commentRepository.delete(comment); // 댓글 삭제
+        //commentRepository.delete(isCommentPresent(commentId));
     }
 
     @Transactional
@@ -80,16 +78,27 @@ public class CommentServiceImpl implements CommentService {
                 .map(CommentResponseDto::toDto)
                 .collect(Collectors.toList());
     }
-    public void isLogin(User user) {
+
+    private void isLogin(User user) {
         userRepository.findById(user.getPid()).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
     }
 
-    public void isAccess(User user, Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_COMMENT));
+    private void isAccess(User user, Long commentId) {
+        Comment comment = isCommentPresent(commentId);
 
         if (!user.getPid().equals(comment.getUser().getPid())) {
             throw new CustomException(Error.ACCESS_DENIED);
         }
     }
+
+    private Comment isCommentPresent(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_COMMENT));
+    }
+
+    private Board isBoardPresent(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_BOARD));
+    }
+
 }

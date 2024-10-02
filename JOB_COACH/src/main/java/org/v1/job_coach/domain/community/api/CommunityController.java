@@ -37,7 +37,7 @@ public class CommunityController {
     }
 
     @GetMapping("{board_id}")
-    public ResponseEntity<?> getBoard(@AuthenticationPrincipal User user, @PathVariable Long board_id){
+    public ResponseEntity<?> getBoard(@AuthenticationPrincipal User user, @PathVariable Long board_id) {
         BoardResponseDto boardResponseDto = boardService.getContent(board_id, user);
         return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
     }
@@ -59,7 +59,7 @@ public class CommunityController {
             @Parameter(name = "size", description = "(선택적) 페이지당 컨텐츠 개수, 기본 10, query string")})
     public ResponseEntity<?> findByTitle(@RequestParam String title,
                                          @RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "10") int size){
+                                         @RequestParam(defaultValue = "10") int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<BoardResponseDto> boardResponseDtos = boardService.searchBoard(pageable, title);
 
@@ -73,17 +73,17 @@ public class CommunityController {
     @Operation(summary = "커뮤니티 게시글 저장 API", description = "게시글을 저장하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal User user,
-                                                          @RequestBody BoardRequestDto boardRequestDto){
+                                       @RequestBody BoardRequestDto boardRequestDto) {
         BoardResponseDto boardResponseDto = boardService.saveBoard(boardRequestDto, user);
         return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
     }
+
     @PutMapping("{board_id}")
     @Operation(summary = "커뮤니티 게시글 수정 API", description = "게시글을 수정하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true),
-            @Parameter(name = "Board Id", description = "게시글 번호", required = true)})
+    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> changeBoard(@AuthenticationPrincipal User user,
-                                                            @PathVariable Long board_id,
-                                                            @RequestBody BoardChangeRequestDto boardChangeRequestDto){
+                                         @PathVariable Long board_id,
+                                         @RequestBody BoardChangeRequestDto boardChangeRequestDto) {
         BoardResponseDto boardResponseDto = boardService.changeBoard(board_id, boardChangeRequestDto, user);
 
         return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
@@ -91,10 +91,9 @@ public class CommunityController {
 
     @DeleteMapping("{board_id}")
     @Operation(summary = "커뮤니티 게시글 삭제 API", description = "게시글을 삭제하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true),
-            @Parameter(name = "Board Id", description = "게시글 번호", required = true)})
+    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> deleteBoard(@AuthenticationPrincipal User user,
-                                                  @PathVariable Long board_id){
+                                         @PathVariable Long board_id) {
         boardService.deleteBoard(board_id, user);
         return ResponseEntity.status(HttpStatus.OK).body("게시글을 성공적으로 삭제하였습니다.");
     }
@@ -104,7 +103,7 @@ public class CommunityController {
             "query string으로 page 번호를 주세요")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> getComments(@PathVariable Long board_id,
-                                                                @RequestParam(defaultValue = "0") int page) {
+                                         @RequestParam(defaultValue = "0") int page) {
         List<CommentResponseDto> comments = commentService.getComments(board_id, page);
         return ResponseEntity.status(HttpStatus.OK).body(comments);
     }
@@ -113,8 +112,8 @@ public class CommunityController {
     @Operation(summary = "커뮤니티 댓글 저장 API", description = "댓글을 저장하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> saveComment(@AuthenticationPrincipal User user,
-                                                          @PathVariable Long board_id,
-                                                          @RequestBody CommentRequestDto dto) {
+                                         @PathVariable Long board_id,
+                                         @RequestBody CommentRequestDto dto) {
         CommentResponseDto commentResponseDto = commentService.saveComment(board_id, dto, user);
         return ResponseEntity.status(HttpStatus.OK).body(commentResponseDto);
     }
@@ -123,9 +122,10 @@ public class CommunityController {
     @Operation(summary = "커뮤니티 댓글 수정 API", description = "댓글을 수정하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> updateComment(@AuthenticationPrincipal User user,
-                                                            @PathVariable Long comment_id,
-                                                            @RequestBody CommentRequestDto dto) {
-        CommentResponseDto commentResponseDto = commentService.updateComment(comment_id, dto, user);
+                                           @PathVariable Long comment_id,
+                                           @PathVariable Long board_id,
+                                           @RequestBody CommentRequestDto dto) {
+        CommentResponseDto commentResponseDto = commentService.updateComment(comment_id, dto, user, board_id);
         return ResponseEntity.status(HttpStatus.OK).body(commentResponseDto);
     }
 
@@ -133,10 +133,9 @@ public class CommunityController {
     @Operation(summary = "커뮤니티 댓글 삭제 API", description = "댓글을 삭제하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> deleteComment(@AuthenticationPrincipal User user,
-                                                @PathVariable Long comment_id) {
-        commentService.deleteComment(comment_id, user);
+                                           @PathVariable Long comment_id,
+                                           @PathVariable Long board_id) {
+        commentService.deleteComment(comment_id, user, board_id);
         return ResponseEntity.status(HttpStatus.OK).body("댓글이 성공적으로 삭제되었습니다.");
     }
-
-
-    }
+}

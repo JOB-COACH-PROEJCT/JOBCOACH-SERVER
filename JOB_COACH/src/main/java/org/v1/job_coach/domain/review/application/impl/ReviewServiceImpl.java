@@ -10,6 +10,7 @@ import org.v1.job_coach.domain.review.application.ReviewService;
 import org.v1.job_coach.domain.review.dao.ReviewRepository;
 import org.v1.job_coach.domain.review.domain.Review;
 import org.v1.job_coach.domain.review.dto.request.ReviewRequestDto;
+import org.v1.job_coach.domain.review.dto.response.ReviewDetailResponseDto;
 import org.v1.job_coach.domain.review.dto.response.ReviewResponseDto;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
@@ -41,13 +42,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void updateReview(Long reviewId, ReviewRequestDto reviewRequestDto, Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_REVIEW));
+        Review review = isReviewPresent(reviewId);
         //작성자와 다를시 오류
-        if (!review.getUser().getPid().equals(userId)) {
-            throw new CustomException(Error.NOT_AUTHORIZED);
-        }
+        extracted(userId, review);
+
         review.update(reviewRequestDto);
     }
+
     @Override
     @Transactional
     public Page<ReviewResponseDto> getAllReviews(Pageable pageable) {
@@ -58,18 +59,20 @@ public class ReviewServiceImpl implements ReviewService {
     @Transactional
     public void deleteReview(Long id, Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new CustomException(Error.NOT_FOUND_REVIEW));
+        Review review = isReviewPresent(id);
 
-        if (!review.getUser().getPid().equals(userId)) {
-            throw new CustomException(Error.NOT_AUTHORIZED);
-        }
+        //작성자와 다를시 오류
+        extracted(userId, review);
         reviewRepository.delete(review);
     }
     @Override
-    public ReviewResponseDto getReviewById(Long id) {
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new CustomException(Error.NOT_FOUND_REVIEW));
-        return ReviewResponseDto.toDto(review);
+    @Transactional
+    public ReviewDetailResponseDto getReviewById(Long id) {
+        Review review = isReviewPresent(id);
+        return ReviewDetailResponseDto.toDto(review);
     }
+
+    @Transactional
     public Page<ReviewResponseDto> searchReviews(Pageable pageable, String title) {
         List<Review> allReviews = reviewRepository.findAll();
 
@@ -83,6 +86,16 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(ReviewResponseDto::toDto)
                 .collect(Collectors.toList());
         return new PageImpl<>(reviewDtos, pageable, filteredReviews.size());
+    }
+
+    private Review isReviewPresent(Long reviewId) {
+        return reviewRepository.findById(reviewId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_REVIEW));
+    }
+
+    private static void extracted(Long userId, Review review) {
+        if (!review.getUser().getPid().equals(userId)) {
+            throw new CustomException(Error.NOT_AUTHORIZED);
+        }
     }
 
 }

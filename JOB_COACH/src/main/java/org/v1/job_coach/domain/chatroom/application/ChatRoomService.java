@@ -22,7 +22,7 @@ public interface ChatRoomService {
     void deactivateChatRoom(User user, Long ChatRoomId);
 
     /* 랜덤한 질문 하나 가져오기 */
-    QuestionResponseDto getRandomQuestion();
+    QuestionResponseDto getRandomQuestion(User user, Long chatRoomId);
 
     /* 사용자 답변 저장하기 */
     Answer saveAnswer(User user, AnswerRequestDto answerRequestDto, Long chatRoomId);

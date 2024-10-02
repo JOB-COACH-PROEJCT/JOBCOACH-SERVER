@@ -12,9 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.v1.job_coach.domain.community.application.BoardService;
 import org.v1.job_coach.domain.community.dao.BoardRepository;
 import org.v1.job_coach.domain.community.domain.Board;
+import org.v1.job_coach.domain.community.domain.Comment;
 import org.v1.job_coach.domain.community.dto.request.BoardChangeRequestDto;
 import org.v1.job_coach.domain.community.dto.request.BoardRequestDto;
+import org.v1.job_coach.domain.community.dto.request.CommentRequestDto;
 import org.v1.job_coach.domain.community.dto.response.BoardResponseDto;
+import org.v1.job_coach.domain.community.dto.response.CommentResponseDto;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.dao.UserRepository;
@@ -37,7 +40,7 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     public BoardResponseDto getContent(Long id, User user) {
         logger.info("[getContent] : 게시글 반환");
-        Board board = boardRepository.findById(id).orElseThrow(() -> new CustomException(Error.NOT_FOUND_BOARD));
+        Board board = isBoardPresent(id);
         return BoardResponseDto.toDto(board);
     }
 
@@ -64,17 +67,19 @@ public class BoardServiceImpl implements BoardService {
     public BoardResponseDto changeBoard(Long id, BoardChangeRequestDto boardChangeRequestDto, User user) {
         logger.info("[changeBoard] : 게시글 수정");
         isAccess(user);
-
-        Board findBoard = boardRepository.findById(id).orElseThrow(() -> new CustomException(Error.NOT_FOUND_BOARD));
+        extracted(user, id);
+        Board findBoard = isBoardPresent(id);
         return findBoard.updateBoard(boardChangeRequestDto);
     }
+
 
     @Override
     @Transactional
     public void deleteBoard(Long id, User user) {
         logger.info("[deleteBoard] : 게시글 삭제");
         isAccess(user);
-        boardRepository.findById(id).orElseThrow(() -> new CustomException(Error.NOT_FOUND_BOARD));
+        extracted(user, id);
+        isBoardPresent(id);
 
         boardRepository.deleteById(id);
     }
@@ -107,9 +112,14 @@ public class BoardServiceImpl implements BoardService {
         userRepository.findById(user.getPid()).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
     }
 
-    public void isAccess(User user, Long boardID) {
-        if (!user.getPid().equals(boardID)) {
+    public void extracted(User user, Long boardID) {
+        Long boardCreatedUserPid = isBoardPresent(boardID).getUser().getPid();
+        if (!user.getPid().equals(boardCreatedUserPid)) {
             throw new CustomException(Error.ACCESS_DENIED);
         }
     }
+    private Board isBoardPresent(Long id) {
+        return boardRepository.findById(id).orElseThrow(() -> new CustomException(Error.NOT_FOUND_BOARD));
+    }
+
 }

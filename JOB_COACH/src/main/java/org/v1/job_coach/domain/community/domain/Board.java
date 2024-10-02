@@ -40,13 +40,14 @@ public class Board {
     private User user;
 
     @JsonIgnore // 순환 참조 방지
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY,  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
 
     public BoardResponseDto updateBoard(BoardChangeRequestDto boardChangeRequestDto) {
         this.title = boardChangeRequestDto.title();
         this.content = boardChangeRequestDto.content();
+        this.updateDate = LocalDateTime.now();
         return BoardResponseDto.toDto(this);
     }
 

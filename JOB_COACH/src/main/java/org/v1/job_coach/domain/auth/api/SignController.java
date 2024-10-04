@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.v1.job_coach.user.dto.request.SignInRequestDto;
 import org.v1.job_coach.user.dto.response.SignInResultDto;
 import org.v1.job_coach.user.dto.request.SignUpRequestDto;
 import org.v1.job_coach.user.dto.response.SignUpResultDto;
@@ -43,11 +44,11 @@ public class SignController {
 
     @PostMapping("/login")
     @Operation(summary = "회원 로그인", description = "로그인을 진행합니다.")
-    public SignInResultDto SignIn(@RequestParam String email, String password) {
-        logger.info("[sign-in] 로그인을 시도하고 있습니다. id : {}, password : *****", email);
-        SignInResultDto signInResultDto = signService.SignIn(email, password);
+    public SignInResultDto SignIn(@RequestBody SignInRequestDto signInRequestDto) {
+        logger.info("[sign-in] 로그인을 시도하고 있습니다. id : {}, password : *****", signInRequestDto.email());
+        SignInResultDto signInResultDto = signService.SignIn(signInRequestDto);
         if(signInResultDto.getCode() == 0){
-            logger.info("[sign-in] 정상적으로 로그인이 되었습니다. id: {}, token : {}",email,signInResultDto.getToken());
+            logger.info("[sign-in] 정상적으로 로그인이 되었습니다. id: {}, token : {}",signInRequestDto.email(),signInResultDto.getToken());
             signInResultDto.getToken();
         }
         return signInResultDto;

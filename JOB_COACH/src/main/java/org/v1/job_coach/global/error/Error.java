@@ -10,8 +10,8 @@ public enum Error {
 
 
     INVALID_PAGE("페이지 번호가 범위를 벗어났습니다. 페이지 번호를 확인해 주세요.", 400),
-    INVALID_CREDENTIALS("아이디 또는 비밀번호가 일치하지 않습니다.", 400),
-    INVALID_PASSWORD("비밀번호가 일치하지 않습니다.", 400),
+    INVALID_CREDENTIALS("아이디 또는 비밀번호가 일치하지 않습니다.", 401),
+    INVALID_PASSWORD("입력한 비밀번호가 잘못되었습니다. 다시 시도해 주세요.", 401),
     USERNAME_ALREADY_TAKEN("이미 사용 중인 아이디입니다.", 409),
 
 

@@ -11,10 +11,12 @@ import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.application.SignService;
 import org.v1.job_coach.user.dao.UserRepository;
 import org.v1.job_coach.user.domain.User;
+import org.v1.job_coach.user.dto.request.SignInRequestDto;
 import org.v1.job_coach.user.dto.request.SignUpRequestDto;
 import org.v1.job_coach.user.dto.response.SignInResultDto;
 import org.v1.job_coach.user.dto.response.SignUpResultDto;
 
+import javax.management.RuntimeErrorException;
 import java.util.Collections;
 
 
@@ -100,20 +102,23 @@ public class SignServiceImpl implements SignService {
         }
     }
 
+    //throws RuntimeErrorException() 하니까 Controller에서 getToken()이 안됨.
+    //ErrorExcpetion같은 곳에서 찾아보면 token 뭐 설정하는 거 있는데 찾아바봐
     @Override
-    public SignInResultDto SignIn(String email, String password)throws RuntimeException{
-        User user = userRepository.getByEmail(email);
+    public SignInResultDto SignIn(SignInRequestDto sign)/* throws RuntimeErrorException */{
+        User user = userRepository.getByEmail(sign.email());
         // 사용자 존재 여부 및 활성 상태 확인
         if (user == null || !user.isActive()) {
             throw new CustomException(Error.NOT_FOUND_USER);
         }
 
-        if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new RuntimeException();
+        if(!passwordEncoder.matches(sign.password(), user.getPassword())){
+            throw new CustomException(Error.INVALID_PASSWORD);
         }
-        logger.info("[getSignInResult] 패스워드 일치");
 
+        logger.info("[getSignInResult] 패스워드 일치");
         logger.info("[getSignInResult] SignInResultDto 객체 생성");
+
         SignInResultDto signInResultDto = SignInResultDto.builder()
                 .token(jwtProvider.createToken(String.valueOf(user.getEmail()),
                         user.getRoles()))

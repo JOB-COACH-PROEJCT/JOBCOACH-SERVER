@@ -64,7 +64,7 @@ public class SignServiceImpl implements SignService {
                         .profile(signUpRequestDto.password())
                         .roles(Collections.singletonList("ROLE_ADMIN"))
                         .build();
-            } else {
+            } else if (roles.equalsIgnoreCase("coach")) {
                 user = User.builder()
                         .isActive(true)
                         .email(signUpRequestDto.email())
@@ -72,14 +72,24 @@ public class SignServiceImpl implements SignService {
                         .password(passwordEncoder.encode(signUpRequestDto.password()))
                         .name(signUpRequestDto.name())
                         .profile(signUpRequestDto.password())
-                        .roles(Collections.singletonList("ROLE_babyLion"))
+                        .roles(Collections.singletonList("ROLE_COACH"))
+                        .build();
+            }else {
+                user = User.builder()
+                        .isActive(true)
+                        .email(signUpRequestDto.email())
+                        .number(signUpRequestDto.number())
+                        .password(passwordEncoder.encode(signUpRequestDto.password()))
+                        .name(signUpRequestDto.name())
+                        .profile(signUpRequestDto.password())
+                        .roles(Collections.singletonList("ROLE_USER"))
                         .build();
             }
 
             User savedUser = userRepository.save(user);
 
             SignUpResultDto signUpResultDto = new SignUpResultDto();
-            logger.info("[getSignResultDto] babyLion 정보 들어왔는지 확인 후 결과값 주입");
+            logger.info("[getSignResultDto] User 정보 들어왔는지 확인 후 결과값 주입");
 
             if (!savedUser.getEmail().isEmpty()) {
                 setSuccess(signUpResultDto);

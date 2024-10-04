@@ -34,7 +34,7 @@ public class SignServiceImpl implements SignService {
     }
 
     @Override
-    public SignUpResultDto SignUp(SignUpRequestDto signUpRequestDto, String roles){
+    public SignUpResultDto SignUp(SignUpRequestDto signUpRequestDto){
         User user;
         // 활성화된 이메일 중복 체크
         User existingUser = userRepository.getByEmail(signUpRequestDto.email());
@@ -54,7 +54,7 @@ public class SignServiceImpl implements SignService {
                 throw new CustomException(Error.DUPLICATE_USER);
             }
         }else {
-            if (roles.equalsIgnoreCase("admin")) {
+            if (signUpRequestDto.roles().equalsIgnoreCase("admin")) {
                 user = User.builder()
                         .isActive(true)
                         .email(signUpRequestDto.email())
@@ -64,7 +64,7 @@ public class SignServiceImpl implements SignService {
                         .profile(signUpRequestDto.password())
                         .roles(Collections.singletonList("ROLE_ADMIN"))
                         .build();
-            } else if (roles.equalsIgnoreCase("coach")) {
+            } else if (signUpRequestDto.roles().equalsIgnoreCase("coach")) {
                 user = User.builder()
                         .isActive(true)
                         .email(signUpRequestDto.email())

@@ -5,6 +5,7 @@ public record SignUpRequestDto(
         String email,
         String number,
         String password,
-        String profile
+        String profile,
+        String roles
 ){
 }

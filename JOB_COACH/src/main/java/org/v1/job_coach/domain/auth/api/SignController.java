@@ -33,11 +33,12 @@ public class SignController {
 
     @Operation(summary = "회원 가입", description = "회원 가입을 진행합니다.")
     @PostMapping("/sign-up")
-    public SignUpResultDto SignUp(@RequestBody SignUpRequestDto signUpRequestDto, String roles){
-        logger.info("[signUp] 회원가입을 수행합니다. id : {}, password : ****, name : {}, role : {}", signUpRequestDto.email(),
-                signUpRequestDto.password(),roles);
-        SignUpResultDto signUpResultDto = signService.SignUp(signUpRequestDto,roles);
-        return signUpResultDto;
+    public ResponseEntity<?> SignUp(@RequestBody SignUpRequestDto signUpRequestDto){
+        logger.info("[signUp] 회원가입을 수행합니다. id : {}, password : ****, name : {}, role : {}",
+                signUpRequestDto.email(),
+                signUpRequestDto.password(), signUpRequestDto.roles());
+        SignUpResultDto signUpResultDto = signService.SignUp(signUpRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(signUpResultDto);
     }
 
     @PostMapping("/login")
@@ -58,7 +59,7 @@ public class SignController {
         throw new RuntimeException("접근이 금지 되었습니다.");
     }
 
-    @ExceptionHandler(value = RuntimeException.class)
+    //@ExceptionHandler(value = RuntimeException.class)
     public ResponseEntity<Map<String, String>> ExceptionHandler(RuntimeException e) {
         HttpHeaders responseHeaders = new HttpHeaders();
         //responseHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");

@@ -1,5 +1,6 @@
 package org.v1.job_coach.global.error;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,9 +9,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class CustomExceptionHandler {
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
-        ErrorResponse errorResponse = ErrorResponse.error(ex);
-        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(ex.getState()));
+    public ResponseEntity<ErrorResponse> handleCustomException(HttpServletRequest request, CustomException ex) {
+        String path = request.getRequestURI(); //요청 url 가져오기
+        ErrorResponse errorDto = ErrorResponse.toErrorDto(ex, path);
+
+        /*ResponseEntity 객체생성 인자값 -> (body, status)*/
+        return new ResponseEntity<>(errorDto, HttpStatus.valueOf(ex.getState()));
     }
 
     // IllegalArgumentException, NoSuchElementException 처리

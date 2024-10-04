@@ -32,10 +32,8 @@ public enum Error {
 
     ERROR_OPENAI_RESPONSE("AI 응답에 오류가 발생하였습니다.", 500);
 
-
-
-    private final int state;
     private final String errorMessage;
+    private final int state;
 
     Error(String errorMessage, int state) {
         this.errorMessage = errorMessage;

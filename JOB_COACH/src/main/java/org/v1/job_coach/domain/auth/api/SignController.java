@@ -9,11 +9,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.v1.job_coach.user.dto.request.SignInRequestDto;
-import org.v1.job_coach.user.dto.response.SignInResultDto;
-import org.v1.job_coach.user.dto.request.SignUpRequestDto;
-import org.v1.job_coach.user.dto.response.SignUpResultDto;
+import org.v1.job_coach.global.error.CustomException;
+import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.application.SignService;
+import org.v1.job_coach.user.dto.request.SignInRequestDto;
+import org.v1.job_coach.user.dto.request.SignUpRequestDto;
+import org.v1.job_coach.user.dto.response.SignInResponseDto;
+import org.v1.job_coach.user.dto.response.SignUpResponseDto;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,18 +40,17 @@ public class SignController {
         logger.info("[signUp] 회원가입을 수행합니다. id : {}, password : ****, name : {}, role : {}",
                 signUpRequestDto.email(),
                 signUpRequestDto.password(), signUpRequestDto.roles());
-        SignUpResultDto signUpResultDto = signService.SignUp(signUpRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(signUpResultDto);
+        SignUpResponseDto signUpResponseDto = signService.SignUp(signUpRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(signUpResponseDto);
     }
 
     @PostMapping("/login")
     @Operation(summary = "회원 로그인", description = "로그인을 진행합니다.")
-    public SignInResultDto SignIn(@RequestBody SignInRequestDto signInRequestDto) {
+    public SignInResponseDto SignIn(@RequestBody SignInRequestDto signInRequestDto) {
         logger.info("[sign-in] 로그인을 시도하고 있습니다. id : {}, password : *****", signInRequestDto.email());
-        SignInResultDto signInResultDto = signService.SignIn(signInRequestDto);
-        if(signInResultDto.getCode() == 0){
+        SignInResponseDto signInResultDto = signService.SignIn(signInRequestDto);
+        if(signInResultDto.getCode() == 200){
             logger.info("[sign-in] 정상적으로 로그인이 되었습니다. id: {}, token : {}",signInRequestDto.email(),signInResultDto.getToken());
-            signInResultDto.getToken();
         }
         return signInResultDto;
     }
@@ -57,7 +58,7 @@ public class SignController {
     @Operation(summary = "회원 예외처리", description = "접근권한이 없을 시 예외처리를 진행합니다.")
     @GetMapping(value = "/exception")
     public void exceptionTest()throws  RuntimeException{
-        throw new RuntimeException("접근이 금지 되었습니다.");
+        throw new CustomException(Error.ACCESS_DENIED);
     }
 
     //@ExceptionHandler(value = RuntimeException.class)

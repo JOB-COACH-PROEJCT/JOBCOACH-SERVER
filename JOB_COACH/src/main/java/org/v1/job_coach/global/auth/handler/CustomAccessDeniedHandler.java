@@ -12,13 +12,11 @@ import java.io.IOException;
 
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
-
     private Logger logger = LoggerFactory.getLogger(CustomAccessDeniedHandler.class);
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
-                       AccessDeniedException e)
-            throws IOException {
+                       AccessDeniedException e) throws IOException {
         logger.info("[handle] 접근이 막혔을 경우 리다이렉트");
         response.sendRedirect("/sign-api/exception");
     }

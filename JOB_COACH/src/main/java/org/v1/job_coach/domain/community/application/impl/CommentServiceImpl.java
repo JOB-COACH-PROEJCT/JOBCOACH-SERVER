@@ -11,7 +11,9 @@ import org.v1.job_coach.domain.community.dao.CommentRepository;
 import org.v1.job_coach.domain.community.domain.Board;
 import org.v1.job_coach.domain.community.domain.Comment;
 import org.v1.job_coach.domain.community.dto.request.CommentRequestDto;
+import org.v1.job_coach.domain.community.dto.response.BoardResponseDto;
 import org.v1.job_coach.domain.community.dto.response.CommentResponseDto;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.dao.UserRepository;
@@ -36,19 +38,19 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Transactional
-    public CommentResponseDto saveComment(Long boardId, CommentRequestDto dto, User user) {
+    public ResultResponseDto<?> saveComment(Long boardId, CommentRequestDto dto, User user) {
         isLogin(user);
-
         Board board = isBoardPresent(boardId);
 
-        Comment comment = new Comment(dto, user, board);
-        commentRepository.save(comment);
+        Comment comment = commentRepository.save(new Comment(dto, user, board));
 
-        return CommentResponseDto.toDto(comment);
+        return ResultResponseDto.toResultResponseDto(
+                201,
+                "댓글이 성공적으로 저장되었습니다.");
     }
 
     @Transactional
-    public CommentResponseDto updateComment(Long commentId, CommentRequestDto dto, User user, Long boardId) {
+    public ResultResponseDto<?> updateComment(Long commentId, CommentRequestDto dto, User user, Long boardId) {
         isLogin(user);
         isAccess(user, commentId);
         Comment comment= isCommentPresent(commentId);
@@ -56,27 +58,35 @@ public class CommentServiceImpl implements CommentService {
         comment.updateContent(dto.content());
         commentRepository.save(comment);
 
-        return CommentResponseDto.toDto(comment);
+        return ResultResponseDto.toResultResponseDto(
+                200,
+                "댓글이 성공적으로 수정되었습니다.");
     }
 
     @Transactional
-    public void deleteComment(Long commentId, User user, Long boardId) {
+    public ResultResponseDto<?> deleteComment(Long commentId, User user, Long boardId) {
         isLogin(user);
         isAccess(user, commentId);
         isBoardPresent(boardId);
         Comment comment = isCommentPresent(commentId); // 댓글을 영속성 컨텍스트에서 로드
         commentRepository.delete(comment); // 댓글 삭제
-        //commentRepository.delete(isCommentPresent(commentId));
+
+        return ResultResponseDto.toResultResponseDto(
+                200,
+                "댓글이 성공적으로 삭제되었습니다.");
     }
 
     @Transactional
-    public List<CommentResponseDto> getComments(Long boardId, int page) {
+    public ResultResponseDto<?> getComments(Long boardId, int page) {
         Pageable pageable = PageRequest.of(page, 10);
         Page<Comment> comments = commentRepository.findByBoard_Id(boardId, pageable);
 
-        return comments.stream()
-                .map(CommentResponseDto::toDto)
-                .collect(Collectors.toList());
+        return ResultResponseDto.toDataResponseDto(
+                200,
+                "댓글 목록이 성공적으로 반환되었습니다.",
+                comments.stream()
+                        .map(CommentResponseDto::toDto)
+                        .collect(Collectors.toList()));
     }
 
     private void isLogin(User user) {

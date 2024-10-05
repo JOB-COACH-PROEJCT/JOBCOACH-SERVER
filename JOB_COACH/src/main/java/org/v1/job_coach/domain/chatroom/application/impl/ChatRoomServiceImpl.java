@@ -36,9 +36,6 @@ import java.util.List;
 @Service
 public class ChatRoomServiceImpl implements ChatRoomService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     private final ChatRoomRepository chatRoomRepository;
     private final QuestionRepository questionRepository;
     private final ConsultingRepository consultingRepository;

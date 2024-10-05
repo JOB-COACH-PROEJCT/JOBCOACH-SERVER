@@ -12,18 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.v1.job_coach.domain.community.application.BoardService;
 import org.v1.job_coach.domain.community.dao.BoardRepository;
 import org.v1.job_coach.domain.community.domain.Board;
-import org.v1.job_coach.domain.community.domain.Comment;
 import org.v1.job_coach.domain.community.dto.request.BoardChangeRequestDto;
 import org.v1.job_coach.domain.community.dto.request.BoardRequestDto;
-import org.v1.job_coach.domain.community.dto.request.CommentRequestDto;
 import org.v1.job_coach.domain.community.dto.response.BoardResponseDto;
-import org.v1.job_coach.domain.community.dto.response.CommentResponseDto;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.dao.UserRepository;
 import org.v1.job_coach.user.domain.User;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,61 +35,75 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardResponseDto getContent(Long id, User user) {
+    public ResultResponseDto<?> getContent(Long id, User user) {
         logger.info("[getContent] : 게시글 반환");
+
         Board board = isBoardPresent(id);
-        return BoardResponseDto.toDto(board);
+
+        BoardResponseDto boardDto = BoardResponseDto.toDto(board);
+
+        return ResultResponseDto.toDataResponseDto(
+                200,
+                "게시글이 성공적으로 반환되었습니다.",
+                boardDto);
+
     }
 
     @Override
     @Transactional
-    public BoardResponseDto saveBoard(BoardRequestDto boardRequestDto, User user) {
+    public ResultResponseDto<?> saveBoard(BoardRequestDto boardRequestDto, User user) {
         logger.info("[saveBoard] 게시글 저장 : {}", boardRequestDto.toString());
         isAccess(user);
 
-        Board board = new Board();
-        board.setTitle(boardRequestDto.title());
-        board.setContent(boardRequestDto.content());
-        board.setCreateDate(LocalDateTime.now());
-        board.setUpdateDate(LocalDateTime.now());
-        board.setUser(user);
+        boardRepository.save(new Board(boardRequestDto, user));
 
-        Board savedBoard = boardRepository.save(board);
-
-        return BoardResponseDto.toDto(savedBoard);
+        return ResultResponseDto.toResultResponseDto(
+                201,
+                "게시글이 성공적으로 저장되었습니다.");
     }
 
     @Override
     @Transactional
-    public BoardResponseDto changeBoard(Long id, BoardChangeRequestDto boardChangeRequestDto, User user) {
+    public ResultResponseDto<?> changeBoard(Long id, BoardChangeRequestDto boardChangeRequestDto, User user) {
         logger.info("[changeBoard] : 게시글 수정");
         isAccess(user);
         extracted(user, id);
         Board findBoard = isBoardPresent(id);
-        return findBoard.updateBoard(boardChangeRequestDto);
+        findBoard.updateBoard(boardChangeRequestDto);
+
+        return ResultResponseDto.toResultResponseDto(
+                200,
+                "게시글이 성공적으로 수정되었습니다.");
     }
 
 
     @Override
     @Transactional
-    public void deleteBoard(Long id, User user) {
+    public ResultResponseDto<?> deleteBoard(Long id, User user) {
         logger.info("[deleteBoard] : 게시글 삭제");
         isAccess(user);
         extracted(user, id);
         isBoardPresent(id);
 
         boardRepository.deleteById(id);
+
+        return ResultResponseDto.toResultResponseDto(
+                200,
+                "게시글이 성공적으로 삭제되었습니다.");
     }
 
     @Transactional
-    public Page<BoardResponseDto> getBoards(int page) {
+    public ResultResponseDto<?> getBoards(int page) {
         Pageable pageable = PageRequest.of(page, 10);
         Page<Board> boards = boardRepository.findAll(pageable);
 
-        return boards.map(BoardResponseDto::toDto);
+        return ResultResponseDto.toDataResponseDto(
+                200,
+                "게시글이 성공적으로 반환되었습니다.",
+                boards.map(BoardResponseDto::toDto));
     }
 
-    public Page<BoardResponseDto> searchBoard(Pageable pageable, String title) {
+    public ResultResponseDto<?> searchBoard(Pageable pageable, String title) {
         List<Board> allBoards = boardRepository.findAll();
 
         List<Board> filteredBoard = allBoards.stream()
@@ -105,7 +116,11 @@ public class BoardServiceImpl implements BoardService {
                 .stream()
                 .map(BoardResponseDto::toDto)
                 .collect(Collectors.toList());
-        return new PageImpl<>(reviewDtos, pageable, filteredBoard.size());
+
+        return ResultResponseDto.toDataResponseDto(
+                200,
+                "게시글이 성공적으로 반환되었습니다.",
+                new PageImpl<>(reviewDtos, pageable, filteredBoard.size()));
     }
 
     public void isAccess(User user) {

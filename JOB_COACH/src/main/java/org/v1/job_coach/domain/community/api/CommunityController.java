@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +15,8 @@ import org.v1.job_coach.domain.community.application.CommentService;
 import org.v1.job_coach.domain.community.dto.request.BoardChangeRequestDto;
 import org.v1.job_coach.domain.community.dto.request.BoardRequestDto;
 import org.v1.job_coach.domain.community.dto.request.CommentRequestDto;
-import org.v1.job_coach.domain.community.dto.response.BoardResponseDto;
-import org.v1.job_coach.domain.community.dto.response.CommentResponseDto;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.domain.User;
-
-import java.util.List;
 
 @Tag(name = "community", description = "커뮤니티 API")
 @RestController
@@ -37,9 +33,12 @@ public class CommunityController {
     }
 
     @GetMapping("{board_id}")
+    @Operation(summary = "커뮤니티 게시글 상세페이지 조회 API", description = "특정 게시글을 반환하는 API입니다."
+            + "query string으로 page 번호를 주세요")
+    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> getBoard(@AuthenticationPrincipal User user, @PathVariable Long board_id) {
-        BoardResponseDto boardResponseDto = boardService.getContent(board_id, user);
-        return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
+        ResultResponseDto<?> boardDto = boardService.getContent(board_id, user);
+        return ResponseEntity.status(HttpStatus.OK).body(boardDto);
     }
 
     @GetMapping
@@ -47,8 +46,9 @@ public class CommunityController {
             + "query string으로 page 번호를 주세요")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> getBoards(@RequestParam(defaultValue = "0") int page) {
-        Page<BoardResponseDto> boards = boardService.getBoards(page);
-        return ResponseEntity.status(HttpStatus.OK).body(boards);
+        ResultResponseDto<?> boardsDto = boardService.getBoards(page);
+
+        return ResponseEntity.status(HttpStatus.OK).body(boardsDto);
     }
 
     @GetMapping("/search")
@@ -61,12 +61,13 @@ public class CommunityController {
                                          @RequestParam(defaultValue = "0") int page,
                                          @RequestParam(defaultValue = "10") int size) {
         PageRequest pageable = PageRequest.of(page, size);
-        Page<BoardResponseDto> boardResponseDtos = boardService.searchBoard(pageable, title);
 
-        if (boardResponseDtos.isEmpty()) {
+        ResultResponseDto<?> boardsDto = boardService.searchBoard(pageable, title);
+
+        if (boardsDto == null) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("검색 된 후기가 없습니다.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(boardResponseDtos);
+        return ResponseEntity.status(HttpStatus.OK).body(boardsDto);
     }
 
     @PostMapping
@@ -74,8 +75,8 @@ public class CommunityController {
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> saveBoard(@AuthenticationPrincipal User user,
                                        @RequestBody BoardRequestDto boardRequestDto) {
-        BoardResponseDto boardResponseDto = boardService.saveBoard(boardRequestDto, user);
-        return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
+        ResultResponseDto<?> boardDto = boardService.saveBoard(boardRequestDto, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(boardDto);
     }
 
     @PutMapping("{board_id}")
@@ -84,9 +85,9 @@ public class CommunityController {
     public ResponseEntity<?> changeBoard(@AuthenticationPrincipal User user,
                                          @PathVariable Long board_id,
                                          @RequestBody BoardChangeRequestDto boardChangeRequestDto) {
-        BoardResponseDto boardResponseDto = boardService.changeBoard(board_id, boardChangeRequestDto, user);
+        ResultResponseDto<?> boardDto = boardService.changeBoard(board_id, boardChangeRequestDto, user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(boardResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(boardDto);
     }
 
     @DeleteMapping("{board_id}")
@@ -94,8 +95,8 @@ public class CommunityController {
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> deleteBoard(@AuthenticationPrincipal User user,
                                          @PathVariable Long board_id) {
-        boardService.deleteBoard(board_id, user);
-        return ResponseEntity.status(HttpStatus.OK).body("게시글을 성공적으로 삭제하였습니다.");
+        ResultResponseDto<?> boardDto = boardService.deleteBoard(board_id, user);
+        return ResponseEntity.status(HttpStatus.OK).body(boardDto);
     }
 
     @GetMapping("{board_id}/comments")
@@ -104,8 +105,8 @@ public class CommunityController {
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> getComments(@PathVariable Long board_id,
                                          @RequestParam(defaultValue = "0") int page) {
-        List<CommentResponseDto> comments = commentService.getComments(board_id, page);
-        return ResponseEntity.status(HttpStatus.OK).body(comments);
+        ResultResponseDto<?> commentsDto = commentService.getComments(board_id, page);
+        return ResponseEntity.status(HttpStatus.OK).body(commentsDto);
     }
 
     @PostMapping("{board_id}/comments")
@@ -114,8 +115,8 @@ public class CommunityController {
     public ResponseEntity<?> saveComment(@AuthenticationPrincipal User user,
                                          @PathVariable Long board_id,
                                          @RequestBody CommentRequestDto dto) {
-        CommentResponseDto commentResponseDto = commentService.saveComment(board_id, dto, user);
-        return ResponseEntity.status(HttpStatus.OK).body(commentResponseDto);
+        ResultResponseDto<?> commentDto = commentService.saveComment(board_id, dto, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentDto);
     }
 
     @PutMapping("{board_id}/comments/{comment_id}")
@@ -125,8 +126,8 @@ public class CommunityController {
                                            @PathVariable Long comment_id,
                                            @PathVariable Long board_id,
                                            @RequestBody CommentRequestDto dto) {
-        CommentResponseDto commentResponseDto = commentService.updateComment(comment_id, dto, user, board_id);
-        return ResponseEntity.status(HttpStatus.OK).body(commentResponseDto);
+        ResultResponseDto<?> commentDto = commentService.updateComment(comment_id, dto, user, board_id);
+        return ResponseEntity.status(HttpStatus.OK).body(commentDto);
     }
 
     @DeleteMapping("{board_id}/comments/{comment_id}")
@@ -135,7 +136,7 @@ public class CommunityController {
     public ResponseEntity<?> deleteComment(@AuthenticationPrincipal User user,
                                            @PathVariable Long comment_id,
                                            @PathVariable Long board_id) {
-        commentService.deleteComment(comment_id, user, board_id);
-        return ResponseEntity.status(HttpStatus.OK).body("댓글이 성공적으로 삭제되었습니다.");
+        ResultResponseDto<?> commentDto = commentService.deleteComment(comment_id, user, board_id);
+        return ResponseEntity.status(HttpStatus.OK).body(commentDto);
     }
 }

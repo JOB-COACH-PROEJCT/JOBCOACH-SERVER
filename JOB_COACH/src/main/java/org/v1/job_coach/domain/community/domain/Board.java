@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.v1.job_coach.domain.community.dto.request.BoardChangeRequestDto;
+import org.v1.job_coach.domain.community.dto.request.BoardRequestDto;
 import org.v1.job_coach.domain.community.dto.response.BoardResponseDto;
 import org.v1.job_coach.user.domain.User;
 import java.time.LocalDateTime;
@@ -14,9 +15,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
-@Table(name = "Board")
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,6 +54,13 @@ public class Board {
         this.id = id;
         this.title = title;
         this.createDate = createDate;
+    }
+
+    public Board(BoardRequestDto boardRequestDto, User user) {
+        this.user = user;
+        this.title = boardRequestDto.title();
+        this.content = boardRequestDto.content();
+        this.createDate = LocalDateTime.now();
     }
 
 

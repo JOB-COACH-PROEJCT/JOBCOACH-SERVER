@@ -15,6 +15,7 @@ import org.v1.job_coach.domain.chatroom.application.ChatRoomService;
 import org.v1.job_coach.domain.chatroom.dto.response.ChatRoomResponseDto;
 import org.v1.job_coach.domain.consulting.application.ConsultingService;
 import org.v1.job_coach.domain.consulting.dto.response.ConsultingResponseDto;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.domain.User;
 
 @Slf4j
@@ -39,7 +40,7 @@ public class ConsultingController {
             @Parameter(name = "page", description = "페이지 번호, 0이상이어야 함, query string")})
     public ResponseEntity<?> getChatroom(@AuthenticationPrincipal User user,
                                          @RequestParam(value = "page", defaultValue = "0") int page) {
-        Page<ChatRoomResponseDto> chatRooms = chatRoomService.getChatRooms(user, page);
+        ResultResponseDto<Page<?>> chatRooms = chatRoomService.getChatRooms(user, page);
         return ResponseEntity.status(HttpStatus.OK).body(chatRooms);
     }
 
@@ -60,9 +61,9 @@ public class ConsultingController {
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> deleteChatRoom(@AuthenticationPrincipal User user,
                                             @PathVariable Long roomId) {
-        chatRoomService.deleteChatRoom(user, roomId);
+        ResultResponseDto resultResponseDto = chatRoomService.deleteChatRoom(user, roomId);
         log.info("[ChatRoom 삭제] User: {}, chatRoomId: {}", user, roomId);
-        return ResponseEntity.status(HttpStatus.OK).body("채팅방을 성공적으로 삭제하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(resultResponseDto);
     }
 
 

@@ -3,10 +3,12 @@ package org.v1.job_coach.domain.answer.api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.v1.job_coach.domain.answer.dto.response.AnswerResponseDto;
 import org.v1.job_coach.domain.answer.application.AnswerService;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 
 import java.util.List;
 
@@ -28,7 +30,8 @@ public class AnswerController {
             @PathVariable Long questionId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<AnswerResponseDto> answers = answerService.getAnswers(questionId, page);
-        return ResponseEntity.ok(answers);
+
+        ResultResponseDto<List<AnswerResponseDto>> answers = answerService.getAnswers(questionId, page);
+        return ResponseEntity.status(HttpStatus.OK).body(answers);
     }
 }

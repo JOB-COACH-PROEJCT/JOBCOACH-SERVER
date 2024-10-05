@@ -1,3 +1,4 @@
+/*
 package org.v1.job_coach.user.dto.response;
 
 import lombok.AllArgsConstructor;
@@ -9,10 +10,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class SignUpResultDto {
+public class SignUpResultDto2 {
     private boolean success;
 
     private int code;
 
     private String msg;
 }
+*/

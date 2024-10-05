@@ -8,7 +8,6 @@ public enum Error {
     INTERNAL_SERVER_ERROR("서버에 문제가 발생했습니다.", 500),
     ACCESS_DENIED("접근이 거부되었습니다.", 403),
 
-
     INVALID_PAGE("페이지 번호가 범위를 벗어났습니다. 페이지 번호를 확인해 주세요.", 400),
     INVALID_CREDENTIALS("아이디 또는 비밀번호가 일치하지 않습니다.", 401),
     INVALID_PASSWORD("입력한 비밀번호가 잘못되었습니다. 다시 시도해 주세요.", 401),

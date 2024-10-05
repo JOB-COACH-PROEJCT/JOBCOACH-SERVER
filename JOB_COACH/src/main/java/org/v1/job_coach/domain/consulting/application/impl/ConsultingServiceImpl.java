@@ -1,5 +1,6 @@
 package org.v1.job_coach.domain.consulting.application.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -58,14 +59,12 @@ public class ConsultingServiceImpl implements ConsultingService {
     }
 
     @Transactional
-    public Consulting processConsulting(Answer answer) throws Exception {
+    public Consulting processConsulting(Long answerId){
         // Answer 객체 조회
-        answerRepository.findById(answer.getId()).orElseThrow(() -> new CustomException(Error.NOT_FOUND_ANSWER));
-
+        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_ANSWER));
         Map<String, Object> responseMap = callChatGpt(answer);
         List<Map<String, Object>> choices = (List<Map<String, Object>>) responseMap.get("choices");
 
-        Consulting consulting;
         if (choices != null && !choices.isEmpty()) {
             Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
             String content = (String) message.get("content");
@@ -77,17 +76,20 @@ public class ConsultingServiceImpl implements ConsultingService {
             }
 
             /* Consulting 객체 생성 및 저장 */
-            consulting = new Consulting(answer.getChatRoom(), answer.getQuestion(), answer, content, answer.getUser());
-            consultingRepository.save(consulting);
+            Consulting consulting = new Consulting(answer.getChatRoom(), answer.getQuestion(), answer, content, answer.getUser());
+            /*consultingRepository.save(consulting);*/
+            consulting = consultingRepository.save(consulting); // save 처리로 영속화 보장
+
+            return consulting;
+
         } else {
             log.error("[(ConsultingService.java) processConsulting] OpenAI API 응답 오류");
             throw new CustomException(Error.ERROR_OPENAI_RESPONSE);
         }
-        return consulting;
     }
 
     @Transactional
-    public Map<String, Object> callChatGpt(Answer answer) throws Exception {
+    public Map<String, Object> callChatGpt(Answer answer) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -96,7 +98,12 @@ public class ConsultingServiceImpl implements ConsultingService {
         log.info("[callChatGpt] model = {}", model);
 
         Map<String, Object> bodyMap = createConsulting(answer, model);
-        String body = objectMapper.writeValueAsString(bodyMap);
+        String body = null;
+        try {
+            body = objectMapper.writeValueAsString(bodyMap);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         HttpEntity<String> request = new HttpEntity<>(body, headers);
 
         try {

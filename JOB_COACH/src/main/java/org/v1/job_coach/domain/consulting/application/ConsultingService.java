@@ -9,9 +9,9 @@ import org.v1.job_coach.user.domain.User;
 import java.util.Map;
 
 public interface ConsultingService {
-    Consulting processConsulting(Answer answer) throws Exception;
+    Consulting processConsulting(Long answerId);
 
-    Map<String, Object> callChatGpt(Answer answer) throws Exception;
+    Map<String, Object> callChatGpt(Answer answer);
 
     Map<String, Object> createConsulting(Answer answer, String model);
 

@@ -25,7 +25,7 @@ import org.v1.job_coach.user.domain.User;
 public class ConsultingController {
 
     private final ConsultingService consultingService;
-    private final ChatRoomService chatRoomService;;
+    private final ChatRoomService chatRoomService;
 
     @Autowired
     public ConsultingController(ConsultingService consultingService, ChatRoomService chatRoomService) {
@@ -51,9 +51,9 @@ public class ConsultingController {
                                                  @AuthenticationPrincipal User user,
                                                  @RequestParam(value = "page", defaultValue = "0") int page) {
 
-        Page<ConsultingResponseDto> consulting = consultingService.getConsultingByChatRoom(roomId, page, user);
+        ResultResponseDto<?> consultingDto = consultingService.getConsultingByChatRoom(roomId, page, user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(consulting);
+        return ResponseEntity.status(HttpStatus.OK).body(consultingDto);
     }
 
     @DeleteMapping("/room/{roomId}")
@@ -61,7 +61,7 @@ public class ConsultingController {
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> deleteChatRoom(@AuthenticationPrincipal User user,
                                             @PathVariable Long roomId) {
-        ResultResponseDto resultResponseDto = chatRoomService.deleteChatRoom(user, roomId);
+        ResultResponseDto<?> resultResponseDto = chatRoomService.deleteChatRoom(user, roomId);
         log.info("[ChatRoom 삭제] User: {}, chatRoomId: {}", user, roomId);
         return ResponseEntity.status(HttpStatus.OK).body(resultResponseDto);
     }

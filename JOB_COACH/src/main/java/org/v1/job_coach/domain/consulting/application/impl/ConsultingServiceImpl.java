@@ -20,6 +20,7 @@ import org.v1.job_coach.domain.consulting.application.ConsultingService;
 import org.v1.job_coach.domain.consulting.dao.ConsultingRepository;
 import org.v1.job_coach.domain.consulting.domain.Consulting;
 import org.v1.job_coach.domain.consulting.dto.response.ConsultingResponseDto;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.dao.UserRepository;
@@ -147,18 +148,20 @@ public class ConsultingServiceImpl implements ConsultingService {
     }
 
     @Transactional
-    public Page<ConsultingResponseDto> getConsultingByChatRoom(Long roomId, int page, User user) {
+    public ResultResponseDto<?> getConsultingByChatRoom(Long roomId, int page, User user) {
         ChatRoom chatRoom = validateChatRoomOwnership(roomId, user);
         if (page < 0 || page > (chatRoom.getAnswerList().size() - 1)) {
             throw new CustomException(Error.INVALID_PAGE);
         }
         Pageable pageable = PageRequest.of(page, 1);
         Page<Consulting> consultingPage = consultingRepository.findByChatRoomIdAndUser(roomId, user, pageable);
-        return consultingPage.map(consulting -> ConsultingResponseDto.toDto(
+
+        return ResultResponseDto.toDataResponseDto(200, "모의면접 리스트가 성공적으로 반환되었습니다.", consultingPage.map(consulting -> ConsultingResponseDto.toDto(
                 consulting.getQuestion(),
                 consulting.getAnswer(),
-                consulting));
+                consulting)));
     }
+
     private ChatRoom validateChatRoomOwnership(Long roomId, User user) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_CHATROOM));
         User owner = userRepository.findById(user.getPid()).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));

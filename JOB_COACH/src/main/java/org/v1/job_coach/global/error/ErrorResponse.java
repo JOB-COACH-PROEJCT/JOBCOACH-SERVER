@@ -1,5 +1,7 @@
 package org.v1.job_coach.global.error;
 
+import org.v1.job_coach.global.util.DateFormatter;
+
 import java.time.LocalDateTime;
 
 public record ErrorResponse(
@@ -14,7 +16,7 @@ public record ErrorResponse(
                 ex.getState(),
                 ex.getMessage(),
                 ex.getError().name(),
-                LocalDateTime.now().toString(),
+                DateFormatter.getDateNow(LocalDateTime.now()),
                 path
         );
     }

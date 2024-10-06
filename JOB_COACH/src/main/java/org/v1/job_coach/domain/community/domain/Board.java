@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.v1.job_coach.domain.community.dto.request.BoardChangeRequestDto;
 import org.v1.job_coach.domain.community.dto.request.BoardRequestDto;
 import org.v1.job_coach.domain.community.dto.response.BoardResponseDto;

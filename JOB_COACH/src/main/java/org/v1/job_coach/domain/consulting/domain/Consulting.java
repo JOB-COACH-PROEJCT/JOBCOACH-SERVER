@@ -20,7 +20,7 @@ public class Consulting {
     @JoinColumn(name = "answer_id")
     private Answer answer;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 

@@ -1,6 +1,7 @@
 package org.v1.job_coach.user.dto.response;
 
 import lombok.*;
+import org.v1.job_coach.global.util.DateFormatter;
 
 import java.time.LocalDateTime;
 
@@ -18,19 +19,19 @@ public class SignInResponseDto{
             this.success = true;
             this.code = code;
             this.msg = msg;
-            this.timestamp = LocalDateTime.now().toString();
+            this.timestamp = DateFormatter.getDateNow(LocalDateTime.now());
             this.token = token;
         } else if (code == 409) {
             this.success = false;
             this.code = code;
             this.msg = msg;
-            this.timestamp = LocalDateTime.now().toString();
+            this.timestamp = DateFormatter.getDateNow(LocalDateTime.now());
             this.token = token;
         } else {
             this.success = false;
             this.code = code;
             this.msg = msg;
-            this.timestamp = LocalDateTime.now().toString();
+            this.timestamp = DateFormatter.getDateNow(LocalDateTime.now());
             this.token = token;
         }
     }

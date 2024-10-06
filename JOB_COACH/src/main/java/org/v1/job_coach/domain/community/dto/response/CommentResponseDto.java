@@ -1,6 +1,7 @@
 package org.v1.job_coach.domain.community.dto.response;
 
 import org.v1.job_coach.domain.community.domain.Comment;
+import org.v1.job_coach.global.util.DateFormatter;
 
 import java.time.LocalDateTime;
 
@@ -8,13 +9,13 @@ public record CommentResponseDto(
         Long id,
         String content,
         String userName,
-        LocalDateTime createdAt
+        String createdAt
 ) {
     public static CommentResponseDto toDto(Comment comment) {
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getContent(),
                 comment.getUser().getName(),
-                comment.getCreatedAt());
+                DateFormatter.getDateNow(comment.getCreatedAt()));
     }
 }

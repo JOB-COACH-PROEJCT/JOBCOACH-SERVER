@@ -1,11 +1,13 @@
-package org.v1.job_coach.global.config;
+package org.v1.job_coach.global.util;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.v1.job_coach.domain.chatroom.domain.Question;
 import org.v1.job_coach.domain.chatroom.dao.QuestionRepository;
 
-//@Configuration
+
+@Component
 public class DataLoader {
 
     @Bean
@@ -33,7 +35,6 @@ public class DataLoader {
                     "업무에 필요한 새로운 기술을 배우는 방법에 대해 설명해 주세요.",
                     "자신의 역량을 개선하기 위해 어떤 노력을 하고 있나요?"
             };
-
 
             for (String questionContent : questions) {
                 Question question = new Question(questionContent);

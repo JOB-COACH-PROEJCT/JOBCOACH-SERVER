@@ -47,6 +47,7 @@ public class Review {
 
     @Lob
     @NotBlank(message = "내용을 입력해주세요.")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String tips;   // 면접 TIP
 
     @ManyToOne

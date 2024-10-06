@@ -32,6 +32,7 @@ public class Consulting {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
     private String feedback;
 

@@ -13,6 +13,7 @@ import org.v1.job_coach.domain.mypage.dto.response.UserDeleteResponseDto;
 import org.v1.job_coach.domain.mypage.dto.response.UserInfoResponseDto;
 import org.v1.job_coach.domain.mypage.dto.response.UserUpdateResponseDto;
 import org.v1.job_coach.domain.mypage.application.UserService;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.domain.User;
 
 @Tag(name = "MyPage", description = "마이페이지 API")
@@ -29,8 +30,8 @@ public class UserController {
             responses = {@ApiResponse(responseCode = "200", description = "성공"), @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음")})
     @GetMapping("/my-page")
     public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal User user) {
-        UserInfoResponseDto userInfo = userService.getUserInfo(user);
-        return ResponseEntity.status(HttpStatus.OK).body(userInfo);
+        ResultResponseDto<?> userResponseDto = userService.getUserInfo(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
 
     // 회원 정보 수정
@@ -39,19 +40,16 @@ public class UserController {
     @PutMapping("/my-page")
     public ResponseEntity<?> updateUserInfo(@AuthenticationPrincipal User user,
                                             @RequestBody UserUpdateRequestDto updateRequest) {
-        UserUpdateResponseDto updateResponse = userService.updateUserInfo(user, updateRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(updateResponse);
+        ResultResponseDto<?> userResponseDto = userService.updateUserInfo(user, updateRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
 
     @Operation(summary = "회원 탈퇴", description = "회원 탈퇴를 진행합니다.",
             responses = {@ApiResponse(responseCode = "200", description = "성공"), @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음")})
     @DeleteMapping("/my-page")
     public ResponseEntity<?> deleteUser(@AuthenticationPrincipal User user) {
-        UserDeleteResponseDto deleteResponse = userService.deleteUser(user);
-        if (!deleteResponse.result()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원탈퇴를 처리할 수 없습니다. 문제가 발생했습니다.");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("성공적으로 회원탈퇴 되었습니다. 이용해 주셔서 감사합니다.");
+        ResultResponseDto<?> userResponseDto = userService.deleteUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
     }
 
 

@@ -4,14 +4,15 @@ import org.v1.job_coach.domain.mypage.dto.request.UserUpdateRequestDto;
 import org.v1.job_coach.domain.mypage.dto.response.UserDeleteResponseDto;
 import org.v1.job_coach.domain.mypage.dto.response.UserInfoResponseDto;
 import org.v1.job_coach.domain.mypage.dto.response.UserUpdateResponseDto;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.domain.User;
 
 public interface UserService {
 
-    UserInfoResponseDto getUserInfo(User user);
+    ResultResponseDto<?> getUserInfo(User user);
 
-    UserUpdateResponseDto updateUserInfo(User user, UserUpdateRequestDto updateRequest);
+    ResultResponseDto<?> updateUserInfo(User user, UserUpdateRequestDto updateRequest);
 
-    UserDeleteResponseDto deleteUser(User user);
+    ResultResponseDto<?> deleteUser(User user);
 
 }

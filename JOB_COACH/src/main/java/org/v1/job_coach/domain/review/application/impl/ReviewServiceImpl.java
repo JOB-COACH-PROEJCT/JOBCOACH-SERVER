@@ -83,8 +83,6 @@ public class ReviewServiceImpl implements ReviewService {
                 200,
                 "성공적으로 면접 후기를 삭제하였습니다."
         );
-
-
     }
     @Override
     @Transactional

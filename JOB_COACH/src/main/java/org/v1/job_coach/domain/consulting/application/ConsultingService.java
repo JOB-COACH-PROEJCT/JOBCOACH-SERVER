@@ -8,9 +8,10 @@ import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.domain.User;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public interface ConsultingService {
-    Consulting processConsulting(Long answerId);
+    CompletableFuture<String> processConsulting(Long answerId);
 
     Map<String, Object> callChatGpt(Answer answer);
 

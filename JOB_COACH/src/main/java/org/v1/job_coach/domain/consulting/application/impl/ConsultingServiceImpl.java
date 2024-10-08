@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -26,10 +27,12 @@ import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.dao.UserRepository;
 import org.v1.job_coach.user.domain.User;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -60,7 +63,8 @@ public class ConsultingServiceImpl implements ConsultingService {
     }
 
     @Transactional
-    public Consulting processConsulting(Long answerId){
+    @Async
+    public CompletableFuture<String> processConsulting(Long answerId){
         // Answer 객체 조회
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_ANSWER));
         Map<String, Object> responseMap = callChatGpt(answer);
@@ -70,19 +74,8 @@ public class ConsultingServiceImpl implements ConsultingService {
             Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
             String content = (String) message.get("content");
 
-            if (content.length() > 2000) {
-                log.info("[content 2000자 초과]content: {}", content);
-                log.info("[content 2000자 초과]substring을 시작합니다.");
-                content = content.substring(0, 2000);
-            }
-
-            /* Consulting 객체 생성 및 저장 */
-            Consulting consulting = new Consulting(answer.getChatRoom(), answer.getQuestion(), answer, content, answer.getUser());
-            /*consultingRepository.save(consulting);*/
-            consulting = consultingRepository.save(consulting); // save 처리로 영속화 보장
-
-            return consulting;
-
+            // 작업 완료 후 결과 반환
+            return CompletableFuture.completedFuture("작업 완료");
         } else {
             log.error("[(ConsultingService.java) processConsulting] OpenAI API 응답 오류");
             throw new CustomException(Error.ERROR_OPENAI_RESPONSE);

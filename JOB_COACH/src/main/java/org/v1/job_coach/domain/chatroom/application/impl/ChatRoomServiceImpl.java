@@ -2,6 +2,7 @@ package org.v1.job_coach.domain.chatroom.application.impl;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +33,9 @@ import org.v1.job_coach.user.domain.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Service
 public class ChatRoomServiceImpl implements ChatRoomService {
 
@@ -105,13 +108,21 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         question.addAnswer(answer);
         answerRepository.save(answer);
 
-        Consulting consulting = consultingService.processConsulting(answer.getId());
-        answer.addConsulting(consulting);
-        consultingRepository.save(consulting);
-
+        /*CompletableFuture<String> stringCompletableFuture = consultingService.processConsulting(answer.getId());*/
+        // 비동기적으로 Consulting 처리
+        consultingService.processConsulting(answer.getId())
+                .thenAccept(consultingResult -> {
+                            // 비동기 작업이 완료된 후 Consulting을 Answer에 추가하고 저장
+                            Consulting consulting = new Consulting(
+                                    answer.getChatRoom(),
+                                    answer.getQuestion(),
+                                    answer, consultingResult,
+                                    answer.getUser());
+                            answer.addConsulting(consulting);
+                            consultingRepository.save(consulting);
+                        });
         // 다음 질문 던지기
         askNextQuestion(user, chatRoom);
-
         return AnswerResponseDto.toAnswerResponseDto(answer);
 
     }

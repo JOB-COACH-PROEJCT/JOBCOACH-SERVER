@@ -30,6 +30,7 @@ public interface ChatRoomService {
     AnswerResponseDto saveAnswer(User user, AnswerRequestDto answerRequestDto, Long chatRoomId);
 
 
+
      void consultingInjection(Long answerId, Consulting consulting);
 
 }

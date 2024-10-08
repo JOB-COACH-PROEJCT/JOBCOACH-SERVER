@@ -39,8 +39,7 @@ public class ReviewController {
             @Parameter(name = "size", description = "(선택적) 페이지당 컨텐츠 개수, 기본 10, query string")})
     public ResponseEntity<?> getReviews(@RequestParam(defaultValue = "0") int page,
                                                               @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        ResultResponseDto<Page<?>> responseDto = reviewService.getAllReviews(pageable);
+        ResultResponseDto<Page<?>> responseDto = reviewService.getAllReviews(page, size);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }

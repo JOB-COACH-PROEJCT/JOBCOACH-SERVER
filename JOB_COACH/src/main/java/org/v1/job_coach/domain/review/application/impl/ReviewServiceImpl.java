@@ -3,6 +3,7 @@ package org.v1.job_coach.domain.review.application.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,9 +60,14 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
-    public ResultResponseDto<Page<?>> getAllReviews(Pageable pageable) {
+    public ResultResponseDto<Page<?>> getAllReviews(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<Review> reviews = reviewRepository.findAll(pageable);
+
+        if (page >= reviews.getTotalPages()){
+            throw new CustomException(Error.INVALID_PAGE);
+        }
 
         return ResultResponseDto.toDataResponseDto(
                 200,
@@ -69,6 +75,7 @@ public class ReviewServiceImpl implements ReviewService {
                 reviews.map(ReviewResponseDto::toDto)
         );
     }
+
     @Override
     @Transactional
     public ResultResponseDto<?> deleteReview(Long id, Long userId) {
@@ -105,16 +112,22 @@ public class ReviewServiceImpl implements ReviewService {
                 .toList();
         int start = Math.min((int) pageable.getOffset(), filteredReviews.size());
         int end = Math.min(start + pageable.getPageSize(), filteredReviews.size());
+
+
         List<ReviewResponseDto> reviewDtos = filteredReviews.subList(start, end)
                 .stream()
                 .map(ReviewResponseDto::toDto)
                 .collect(Collectors.toList());
 
+        // 페이지 범위 초과 예외 처리
+        if (start >= filteredReviews.size()) {
+            throw new CustomException(Error.INVALID_PAGE);
+        }
+
         if (reviewDtos.isEmpty()) {
             return ResultResponseDto.toResultResponseDto(
                     204,
                     "해당 검색 조건에 일치하는 결과가 없습니다.");
-
         }
 
         return ResultResponseDto.toDataResponseDto(
@@ -136,5 +149,6 @@ public class ReviewServiceImpl implements ReviewService {
     private void isLogin(User user) {
         userRepository.findById(user.getPid()).orElseThrow(() -> new CustomException(Error.ACCESS_DENIED));
     }
+
 
 }

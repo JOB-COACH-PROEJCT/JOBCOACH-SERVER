@@ -80,12 +80,10 @@ public class JwtTokenProvider {
         logger.info("Header value: {}", header);
 
         if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7); // "Bearer " 부분을 제거하고 토큰만 반환
+            return header.substring(7);// "Bearer " 부분을 제거하고 토큰만 반환
         }
-        return null;
 
-/*
-        return request.getHeader("Authorization");*/
+        return header;
     }
 
     public boolean validationToken(String token) {

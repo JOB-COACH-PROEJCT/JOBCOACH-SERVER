@@ -12,6 +12,7 @@ import org.v1.job_coach.domain.review.domain.Review;
 import org.v1.job_coach.domain.review.dto.request.ReviewRequestDto;
 import org.v1.job_coach.domain.review.dto.response.ReviewDetailResponseDto;
 import org.v1.job_coach.domain.review.dto.response.ReviewResponseDto;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.dao.UserRepository;
@@ -32,49 +33,73 @@ public class ReviewServiceImpl implements ReviewService {
     }
     @Override
     @Transactional
-    public ReviewResponseDto createReview(ReviewRequestDto reviewRequestDto, Long userId) {
+    public ResultResponseDto<?> createReview(ReviewRequestDto reviewRequestDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
         Review review = new Review(reviewRequestDto, user);
         reviewRepository.save(review);
-        return ReviewResponseDto.toDto(review);
+        return ResultResponseDto.toResultResponseDto(
+                201,
+                "성공적으로 면접 후기를 저장하였습니다."
+        );
     }
     @Override
     @Transactional
-    public void updateReview(Long reviewId, ReviewRequestDto reviewRequestDto, Long userId) {
+    public ResultResponseDto<?> updateReview(Long reviewId, ReviewRequestDto reviewRequestDto, Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
         Review review = isReviewPresent(reviewId);
         //작성자와 다를시 오류
         extracted(userId, review);
 
         review.update(reviewRequestDto);
+        return ResultResponseDto.toResultResponseDto(
+                201,
+                "성공적으로 면접 후기를 수정하였습니다."
+        );
     }
 
     @Override
     @Transactional
-    public Page<ReviewResponseDto> getAllReviews(Pageable pageable) {
+    public ResultResponseDto<Page<?>> getAllReviews(Pageable pageable) {
+
         Page<Review> reviews = reviewRepository.findAll(pageable);
-        return reviews.map(ReviewResponseDto::toDto);
+
+        return ResultResponseDto.toDataResponseDto(
+                200,
+                "면접 후기 목록을 반환합니다.",
+                reviews.map(ReviewResponseDto::toDto)
+        );
     }
     @Override
     @Transactional
-    public void deleteReview(Long id, Long userId) {
+    public ResultResponseDto<?> deleteReview(Long id, Long userId) {
         userRepository.findById(userId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
         Review review = isReviewPresent(id);
 
         //작성자와 다를시 오류
         extracted(userId, review);
         reviewRepository.delete(review);
+
+        return ResultResponseDto.toResultResponseDto(
+                200,
+                "성공적으로 면접 후기를 삭제하였습니다."
+        );
+
+
     }
     @Override
     @Transactional
-    public ReviewDetailResponseDto getReviewById(User user, Long id) {
+    public ResultResponseDto<?> getReviewById(User user, Long id) {
 
         isLogin(user);
-        return ReviewDetailResponseDto.toDto(isReviewPresent(id));
+        return ResultResponseDto.toDataResponseDto(
+                200,
+                "면접 후기 목록을 반환합니다.",
+                ReviewDetailResponseDto.toDto(isReviewPresent(id)
+                ));
     }
 
     @Transactional
-    public Page<ReviewResponseDto> searchReviews(Pageable pageable, String title) {
+    public ResultResponseDto<Page<?>> searchReviews(Pageable pageable, String title) {
         List<Review> allReviews = reviewRepository.findAll();
 
         List<Review> filteredReviews = allReviews.stream()
@@ -86,7 +111,18 @@ public class ReviewServiceImpl implements ReviewService {
                 .stream()
                 .map(ReviewResponseDto::toDto)
                 .collect(Collectors.toList());
-        return new PageImpl<>(reviewDtos, pageable, filteredReviews.size());
+
+        if (reviewDtos.isEmpty()) {
+            return ResultResponseDto.toResultResponseDto(
+                    204,
+                    "해당 검색 조건에 일치하는 결과가 없습니다.");
+
+        }
+
+        return ResultResponseDto.toDataResponseDto(
+                200,
+                "면접 후기 목록을 반환합니다.",
+                new PageImpl<>(reviewDtos, pageable, filteredReviews.size()));
     }
 
     private Review isReviewPresent(Long reviewId) {

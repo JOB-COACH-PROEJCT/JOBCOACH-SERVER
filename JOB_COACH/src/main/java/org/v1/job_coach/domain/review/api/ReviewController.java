@@ -76,7 +76,7 @@ public class ReviewController {
     @Operation(summary = "면접 후기 업데이트 API", description = "면접 후기를 수정하는 API 입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> updateReview(@PathVariable Long review_id,
-                                          ReviewRequestDto updateDto,
+                                          @RequestBody ReviewRequestDto updateDto,
                                           @AuthenticationPrincipal User user){
 
         ResultResponseDto<?> responseDto = reviewService.updateReview(review_id, updateDto, user.getPid());

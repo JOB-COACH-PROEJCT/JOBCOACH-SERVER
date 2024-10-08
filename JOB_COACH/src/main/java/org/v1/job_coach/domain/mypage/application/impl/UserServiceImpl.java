@@ -9,6 +9,7 @@ import org.v1.job_coach.domain.mypage.dto.request.UserUpdateRequestDto;
 import org.v1.job_coach.domain.mypage.dto.response.UserDeleteResponseDto;
 import org.v1.job_coach.domain.mypage.dto.response.UserInfoResponseDto;
 import org.v1.job_coach.domain.mypage.dto.response.UserUpdateResponseDto;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.dao.UserRepository;
@@ -29,14 +30,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserInfoResponseDto getUserInfo(User user) {
-        return UserInfoResponseDto.toDto(isUserValid(user));
+    public ResultResponseDto<?> getUserInfo(User user) {
+        return ResultResponseDto.toDataResponseDto(200, "회원 정보를 성공적으로 불러왔습니다.", UserInfoResponseDto.toDto(isUserValid(user)));
     }
     
 
     @Override
     @Transactional
-    public UserUpdateResponseDto updateUserInfo(User user, UserUpdateRequestDto updateRequest) {
+    public ResultResponseDto<?> updateUserInfo(User user, UserUpdateRequestDto updateRequest) {
         User findUser = isUserValid(user);
         /* 비밀번호 일치 확인 */
         if (!passwordEncoder.matches(updateRequest.password(), findUser.getPassword())) {
@@ -44,27 +45,31 @@ public class UserServiceImpl implements UserService {
         }
         String encode = passwordEncoder.encode(updateRequest.updatePassword());
         boolean isUpdate = findUser.updateUser(updateRequest, encode);
-
-
-
-        return UserUpdateResponseDto.toDto(findUser, isUpdate);
+        return ResultResponseDto.toDataResponseDto(
+                200,
+                "회원정보를 성공적으로 업데이트 하였습니다.",
+                UserUpdateResponseDto.toDto(findUser, isUpdate));
     }
 
     @Override
     @Transactional
-    public UserDeleteResponseDto deleteUser(User user) {
+    public ResultResponseDto<?> deleteUser(User user) {
         User deletedUser = isUserValid(user);
+
+        if(!deletedUser.isActive()){
+            return ResultResponseDto.toResultResponseDto(
+                    410,
+                    "이미 회원 탈퇴된 사용자입니다.");
+        }
+
         deletedUser.deactivate();
-        return UserDeleteResponseDto.toDto();
+        UserDeleteResponseDto.toDto();
+        return ResultResponseDto.toResultResponseDto(
+                200,
+                "회원정보를 성공적으로 업데이트 하였습니다.");
     }
 
-    public User isUserValid(User user) {
-        User validationUser = userRepository.findById(user.getPid()).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
-        /*
-         - 탈퇴 유저인지 확인
-         if (user.isDeactivated()) {
-            throw new CustomException("탈퇴한 사용자입니다.");
-        }*/
-        return validationUser;
+    private User isUserValid(User user) {
+        return userRepository.findById(user.getPid()).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
     }
 }

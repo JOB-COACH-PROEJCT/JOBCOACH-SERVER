@@ -101,6 +101,7 @@ public class SignServiceImpl implements SignService {
         if (user == null || !user.isActive()) {
             throw new CustomException(Error.NOT_FOUND_USER);
         }
+
         /* 비밀번호가 일치하는지 확인 */
         if(!passwordEncoder.matches(sign.password(), user.getPassword())){
             throw new CustomException(Error.INVALID_PASSWORD);

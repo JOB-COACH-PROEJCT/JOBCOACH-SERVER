@@ -62,6 +62,10 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .map(ChatRoomResponseDto::toDto)
                 .toList();
 
+        if (page >= chatRooms.getTotalPages()){
+            throw new CustomException(Error.INVALID_PAGE);
+        }
+
         return ResultResponseDto.toDataResponseDto(
                 200,
                 "채팅방 목록이 성공적으로 반환되었습니다.",

@@ -97,6 +97,10 @@ public class BoardServiceImpl implements BoardService {
         Pageable pageable = PageRequest.of(page, 10);
         Page<Board> boards = boardRepository.findAll(pageable);
 
+        if (page >= boards.getTotalPages()){
+            throw new CustomException(Error.INVALID_PAGE);
+        }
+
         return ResultResponseDto.toDataResponseDto(
                 200,
                 "게시글이 성공적으로 반환되었습니다.",
@@ -112,16 +116,28 @@ public class BoardServiceImpl implements BoardService {
 
         int start = Math.min((int) pageable.getOffset(), filteredBoard.size());
         int end = Math.min(start + pageable.getPageSize(), filteredBoard.size());
-        List<BoardResponseDto> reviewDtos = filteredBoard.subList(start, end)
+        List<BoardResponseDto> boardDtos = filteredBoard.subList(start, end)
                 .stream()
                 .map(BoardResponseDto::toDto)
-                .collect(Collectors.toList());
+                .toList();
+
+        if (start >= filteredBoard.size()) {
+            throw new CustomException(Error.INVALID_PAGE);
+        }
+
+        if (boardDtos.isEmpty()) {
+            return ResultResponseDto.toResultResponseDto(
+                    204,
+                    "해당 검색 조건에 일치하는 결과가 없습니다.");
+        }
+
 
         return ResultResponseDto.toDataResponseDto(
                 200,
                 "게시글이 성공적으로 반환되었습니다.",
-                new PageImpl<>(reviewDtos, pageable, filteredBoard.size()));
+                new PageImpl<>(boardDtos, pageable, filteredBoard.size()));
     }
+
 
     public void isAccess(User user) {
         userRepository.findById(user.getPid()).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));

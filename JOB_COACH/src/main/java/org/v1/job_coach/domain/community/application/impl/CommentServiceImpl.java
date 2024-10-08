@@ -81,6 +81,11 @@ public class CommentServiceImpl implements CommentService {
         Pageable pageable = PageRequest.of(page, 10);
         Page<Comment> comments = commentRepository.findByBoard_Id(boardId, pageable);
 
+        if (page >= comments.getTotalPages()){
+            throw new CustomException(Error.INVALID_PAGE);
+        }
+
+
         return ResultResponseDto.toDataResponseDto(
                 200,
                 "댓글 목록이 성공적으로 반환되었습니다.",

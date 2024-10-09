@@ -4,7 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.v1.job_coach.coach.dao.CoachRepository;
+import org.v1.job_coach.coach.domain.Coach;
+import org.v1.job_coach.coach.dto.CoachSignUpRequestDto;
 import org.v1.job_coach.global.auth.jwt.JwtTokenProvider;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.dto.CommonResponse;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
@@ -16,6 +21,7 @@ import org.v1.job_coach.user.dto.request.SignUpRequestDto;
 import org.v1.job_coach.user.dto.response.SignInResponseDto;
 import org.v1.job_coach.user.dto.response.SignUpResponseDto;
 
+import java.util.Collection;
 import java.util.Collections;
 
 
@@ -26,11 +32,13 @@ public class SignServiceImpl implements SignService {
 
     private JwtTokenProvider jwtProvider;
     private UserRepository userRepository;
+    private CoachRepository coachRepository;
     private PasswordEncoder passwordEncoder;
 
-    public SignServiceImpl(JwtTokenProvider jwtProvider, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public SignServiceImpl(JwtTokenProvider jwtProvider, UserRepository userRepository, CoachRepository coachRepository, PasswordEncoder passwordEncoder) {
         this.jwtProvider = jwtProvider;
         this.userRepository = userRepository;
+        this.coachRepository = coachRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -62,15 +70,15 @@ public class SignServiceImpl implements SignService {
                         .roles(Collections.singletonList("ROLE_ADMIN"))
                         .build();
             } else if (signUpRequestDto.roles().equalsIgnoreCase("coach")) {
-                user = User.builder()
-                        .isActive(true)
-                        .email(signUpRequestDto.email())
-                        .number(signUpRequestDto.number())
-                        .password(passwordEncoder.encode(signUpRequestDto.password()))
-                        .name(signUpRequestDto.name())
-                        .profile(signUpRequestDto.password())
-                        .roles(Collections.singletonList("ROLE_COACH"))
-                        .build();
+                user = new Coach(
+                        true,
+                        signUpRequestDto.email(),
+                        signUpRequestDto.number(),
+                        passwordEncoder.encode(signUpRequestDto.password()),
+                        signUpRequestDto.name(),
+                        signUpRequestDto.profile(),
+                        Collections.singletonList("ROLE_COACH")
+                );
             }else {
                 user = User.builder()
                         .isActive(true)
@@ -113,5 +121,20 @@ public class SignServiceImpl implements SignService {
 
         logger.info("[getSignInResult] SignInResultDto 객체에 값 주입");
         return new SignInResponseDto(CommonResponse.LOGIN_SUCCESS.getCode(), CommonResponse.LOGIN_SUCCESS.getMsg(), token);
+    }
+
+    @Override
+    @Transactional
+    public ResultResponseDto<?> SignUpCoach(Long userId, CoachSignUpRequestDto coachSignUpRequestDto) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
+
+        if (!user.getRoles().contains("ROLE_COACH")) {
+            throw new CustomException(Error.NOT_AUTHORIZED);
+        }
+
+        Coach coach = (Coach) user;
+        coach.updateCoachDetails(coachSignUpRequestDto);
+
+        return ResultResponseDto.toResultResponseDto(201, "Coach 회원가입을 완료하였습니다.");
     }
 }

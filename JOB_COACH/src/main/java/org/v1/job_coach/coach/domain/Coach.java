@@ -1,9 +1,14 @@
 package org.v1.job_coach.coach.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import org.v1.job_coach.coach.dto.CoachSignUpRequestDto;
 import org.v1.job_coach.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @Entity
@@ -12,15 +17,14 @@ import lombok.NoArgsConstructor;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Coach extends User {
 
-    @Lob()
     private String university;
 
     @Lob()
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String career;
 
     @Lob()
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String introduction;
 
     @Enumerated(EnumType.STRING)
@@ -31,8 +35,17 @@ public class Coach extends User {
 
     // private List<CoachReview> coachReviewList; -> 추후 추가
 
-/*    Coach(CoachRequest CoachREquest) {
-        university
-    }*/
+    // 명확한 필드를 포함한 생성자 추가
+    public Coach(boolean isActive, String email, String number, String password, String name, String profile,
+                 List<String> roles) {
+        super(isActive, email, number, password, name, profile, roles);
+    }
 
+    public void updateCoachDetails(CoachSignUpRequestDto coachSignUpRequestDto) {
+        this.career = coachSignUpRequestDto.career();
+        this.university = coachSignUpRequestDto.university();
+        this.introduction = coachSignUpRequestDto.introduction();
+        this.expertise = Expertise.valueOf(coachSignUpRequestDto.expertise());
+        this.availableTimes = AvailableTimes.valueOf(coachSignUpRequestDto.availableTimes());
+    }
 }

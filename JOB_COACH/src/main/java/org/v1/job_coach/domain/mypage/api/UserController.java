@@ -8,11 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.v1.job_coach.domain.mypage.dto.request.UserUpdateRequestDto;
-import org.v1.job_coach.domain.mypage.dto.response.UserDeleteResponseDto;
-import org.v1.job_coach.domain.mypage.dto.response.UserInfoResponseDto;
-import org.v1.job_coach.domain.mypage.dto.response.UserUpdateResponseDto;
 import org.v1.job_coach.domain.mypage.application.UserService;
+import org.v1.job_coach.domain.mypage.dto.request.UserUpdateRequestDto;
 import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.domain.User;
 

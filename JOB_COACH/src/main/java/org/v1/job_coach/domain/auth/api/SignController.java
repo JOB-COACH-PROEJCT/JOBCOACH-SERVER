@@ -46,14 +46,14 @@ public class SignController {
         return ResponseEntity.status(HttpStatus.OK).body(signUpResponseDto);
     }
 
-    @Operation(summary = "회원 가입", description = "회원 가입을 진행합니다.")
+/*    @Operation(summary = "회원 가입", description = "회원 가입을 진행합니다.")
     @PostMapping("/sign-up/coach-details")
     public ResponseEntity<?> SignUpCoach(Long userId,
                                          @RequestBody CoachSignUpRequestDto coachSignUpRequestDto){
 
         ResultResponseDto coachDto = signService.SignUpCoach(userId, coachSignUpRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(coachDto);
-    }
+    }*/
 
 
     @PostMapping("/login")

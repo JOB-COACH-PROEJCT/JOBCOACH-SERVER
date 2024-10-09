@@ -23,6 +23,12 @@ public class Coach extends User {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String introduction;
 
+    @Enumerated(EnumType.STRING)
+    Expertise expertise;
+
+    @Enumerated(EnumType.STRING)
+    AvailableTimes availableTimes;
+
     // private List<CoachReview> coachReviewList; -> 추후 추가
 
 /*    Coach(CoachRequest CoachREquest) {

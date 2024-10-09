@@ -45,7 +45,7 @@ public class SignServiceImpl implements SignService {
                 existingUser.activate(signUpRequestDto, encode);
                 // 비활성 사용자 재활성화 및 비밀번호 업데이트
                 userRepository.save(existingUser); // 기존 유저 업데이트 저장
-                return new SignUpResponseDto(CommonResponse.SIGNUP_SUCCESS.getCode(), CommonResponse.SIGNUP_SUCCESS.getMsg());
+                return new SignUpResponseDto(CommonResponse.SIGNUP_SUCCESS.getCode(), CommonResponse.SIGNUP_SUCCESS.getMsg(), existingUser.getPid());
             } else {
                 // 이미 활성화된 사용자 존재 (중복 가입 방지)
                 throw new CustomException(Error.DUPLICATE_USER);
@@ -86,10 +86,11 @@ public class SignServiceImpl implements SignService {
             logger.info("[getSignResultDto] User 정보 들어왔는지 확인 후 결과값 주입");
 
             if (!savedUser.getEmail().isEmpty()) {
-                return new SignUpResponseDto(CommonResponse.SIGNUP_SUCCESS.getCode(), CommonResponse.SIGNUP_SUCCESS.getMsg());
+                return new SignUpResponseDto(CommonResponse.SIGNUP_SUCCESS.getCode(), CommonResponse.SIGNUP_SUCCESS.getMsg(), savedUser.getPid());
             } else {
-                return new SignUpResponseDto(CommonResponse.SIGNUP_FAIL.getCode(), CommonResponse.SIGNUP_SUCCESS.getMsg());
+                return new SignUpResponseDto(CommonResponse.SIGNUP_FAIL.getCode(), CommonResponse.SIGNUP_SUCCESS.getMsg(), null);
             }
+
         }
     }
 

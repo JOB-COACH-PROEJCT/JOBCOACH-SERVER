@@ -102,6 +102,19 @@ public class User implements UserDetails {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
+    // 필요한 필드만 초기화하는 생성자 추가
+    public User(boolean isActive, String email, String number, String password, String name, String profile,
+                List<String> roles) {
+        this.isActive = isActive;
+        this.email = email;
+        this.number = number;
+        this.password = password;
+        this.name = name;
+        this.profile = profile;
+        this.roles = roles;
+        this.createdAt = LocalDateTime.now(); // 생성 시각 자동 설정
+    }
+
 
 
     @Override

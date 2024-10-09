@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "isActive"})})
 @Builder
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User implements UserDetails {
     @PrePersist
     protected void onCreate() {

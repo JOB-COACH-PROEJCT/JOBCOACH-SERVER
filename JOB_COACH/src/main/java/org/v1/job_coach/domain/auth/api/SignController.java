@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.application.SignService;
@@ -43,6 +44,16 @@ public class SignController {
         SignUpResponseDto signUpResponseDto = signService.SignUp(signUpRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(signUpResponseDto);
     }
+
+    @Operation(summary = "회원 가입", description = "회원 가입을 진행합니다.")
+    @PostMapping("/sign-up/coach-details")
+    public ResponseEntity<?> SignUpCoach(Long userId,
+                                         @RequestBody SignUpCoachRequestDto signUpCoachRequestDto){
+
+        ResultResponseDto coachDto = signService.SignUpCoach(userId, signUpCoachRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(coachDto);
+    }
+
 
     @PostMapping("/login")
     @Operation(summary = "회원 로그인", description = "로그인을 진행합니다.")

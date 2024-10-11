@@ -16,7 +16,7 @@ import org.v1.job_coach.user.dto.response.SignInResponseDto;
 @Slf4j
 @Tag(name = "Coach", description = "면접 코치 매칭 서비스 API")
 @RestController
-@RequestMapping("/api/v1/interview")
+@RequestMapping("/api/v1/coachs")
 public class CoachController {
 
     private final CoachServiceImpl coachService;
@@ -40,5 +40,15 @@ public class CoachController {
         log.info("[getCoachDetails] userId: {}로 면접 코치의 상세 정보를 조회합니다.", userId);
         ResultResponseDto<?> coachDetailResponse = coachService.getCoachDetails(userId);
         return ResponseEntity.status(HttpStatus.OK).body(coachDetailResponse);
+    }
+
+    @Operation(summary = "카테고리에 따른 코치 목록 조회", description = "카테고리를 쿼리 파라미터로 전달받아 해당 카테고리에 맞는 면접 코치 목록을 반환합니다.")
+    @GetMapping("/category")
+    public ResponseEntity<?> getCoachesByCategory(@RequestParam(defaultValue = "") String category,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "10") int size) {
+        log.info("[getCoachesByCategory] 카테고리: {}로 면접 코치 목록을 조회합니다. 페이지: {}, 사이즈: {}", category, page, size);
+        ResultResponseDto<?> coachesByCategory = coachService.getCoachesByCategory(category, page, size);
+        return ResponseEntity.status(HttpStatus.OK).body(coachesByCategory);
     }
 }

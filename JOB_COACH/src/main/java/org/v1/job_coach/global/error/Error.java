@@ -20,6 +20,7 @@ public enum Error {
     NOT_FOUND_REVIEW("면접후기를 찾을 수 없습니다",404),
     NOT_AUTHOR("작성자만 게시글을 삭제할 수 있습니다.", 403),
 
+    NOT_FOUND_COACH("존재하지 않는 면접코치입니다.", 404),
     NOT_FOUND_COMMENT("존재하지 않는 댓글입니다.", 404),
     NOT_FOUND_USER("존재하지 않는 회원입니다.", 404),
     NOT_FOUND_CHATROOM("존재하지 않는 채팅방입니다.", 404),

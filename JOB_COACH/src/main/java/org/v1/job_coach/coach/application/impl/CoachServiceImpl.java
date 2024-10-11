@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.v1.job_coach.coach.application.CoachService;
 import org.v1.job_coach.coach.dao.CoachRepository;
 import org.v1.job_coach.coach.domain.Coach;
+import org.v1.job_coach.coach.dto.CoachDetailResponseDto;
 import org.v1.job_coach.coach.dto.CoachResponseDto;
 import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.global.error.CustomException;
@@ -44,4 +45,14 @@ public class CoachServiceImpl implements CoachService {
         return ResultResponseDto.toDataResponseDto(200, "면접 코치 목록을 반환합니다.", list);
 
     }
+
+    public ResultResponseDto<?> getCoachDetails(Long userId) {
+        Coach coach = coachRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
+
+        CoachDetailResponseDto dto = CoachDetailResponseDto.toDto(coach);
+
+        return ResultResponseDto.toDataResponseDto(200, "면접 상세 정보를 반환합니다.", dto);
+    }
+
 }

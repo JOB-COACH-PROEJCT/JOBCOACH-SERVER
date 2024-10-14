@@ -20,6 +20,7 @@ public enum Error {
     NOT_FOUND_REVIEW("면접후기를 찾을 수 없습니다",404),
     NOT_AUTHOR("작성자만 게시글을 삭제할 수 있습니다.", 403),
 
+    NOT_FOUND_MATCH("존재하지 않는 매칭입니다.", 404),
     NOT_FOUND_COACH("존재하지 않는 면접코치입니다.", 404),
     NOT_FOUND_COMMENT("존재하지 않는 댓글입니다.", 404),
     NOT_FOUND_USER("존재하지 않는 회원입니다.", 404),
@@ -29,8 +30,13 @@ public enum Error {
     NOT_FOUND_CONSULTING("존재하지 않는 컨설팅입니다.", 404),
     NOT_AUTHORIZED("접근할 권한이 없습니다.", 403),
 
-    INVALID_INPUT("입력이 유효하지 않습니다.", 400),
+    MATCHING_INVALID_STATUS("매칭 상태가 유효하지 않습니다.", 409),
+    MATCHING_ALREADY_APPROVED("이미 승인된 매칭은 취소할 수 없습니다.", 409),
+    MATCHING_NOT_REQUESTED("매칭이 요청 상태여야 합니다.", 422),
+    MATCHING_NOT_APPROVED("매칭이 승인 상태여야 합니다.", 422),
 
+
+    INVALID_INPUT("입력이 유효하지 않습니다.", 400),
     ERROR_OPENAI_RESPONSE("AI 응답에 오류가 발생하였습니다.", 500);
 
     private final String errorMessage;

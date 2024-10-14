@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.v1.job_coach.coach.domain.Matching;
 import org.v1.job_coach.user.dto.request.SignUpRequestDto;
 import org.v1.job_coach.domain.mypage.dto.request.UserUpdateRequestDto;
 import org.v1.job_coach.domain.chatroom.domain.ChatRoom;
@@ -29,7 +30,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "isActive"})})
@@ -98,6 +98,9 @@ public class User implements UserDetails {
     @JsonManagedReference // 이 User가 작성한 Comment들을 관리
     private List<Comment> comments;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Matching> matchings = new ArrayList<>(); // 유저가 매칭된 코치 리스트
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
@@ -114,7 +117,6 @@ public class User implements UserDetails {
         this.roles = roles;
         this.createdAt = LocalDateTime.now(); // 생성 시각 자동 설정
     }
-
 
 
     @Override
@@ -207,6 +209,13 @@ public class User implements UserDetails {
         this.name = signUpRequestDto.name();
         this.profile = signUpRequestDto.profile();
         this.deactivatedAt = null;
+    }
+    public boolean hasRole(String role) {
+        return roles.contains(role);
+    }
+
+    public boolean isCoach() {
+        return hasRole("ROLE_COACH");
     }
 }
 

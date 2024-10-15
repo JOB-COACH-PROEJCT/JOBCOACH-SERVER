@@ -49,6 +49,8 @@ public class SecurityConfig {
                         //.requestMatchers("/user/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/sign/**").permitAll()
+                        .requestMatchers("/api/v1/chattingRoom/**").permitAll()
+                        .requestMatchers("/chat/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() //-> /v3/api-docs/** 추가해주니까 됐음...
                         .anyRequest().authenticated()
                 )

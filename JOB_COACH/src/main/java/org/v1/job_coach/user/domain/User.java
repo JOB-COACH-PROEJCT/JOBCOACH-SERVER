@@ -13,11 +13,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.v1.job_coach.coach.domain.Matching;
+import org.v1.job_coach.domain.chat.domain.ChattingRoom;
 import org.v1.job_coach.user.dto.request.SignUpRequestDto;
 import org.v1.job_coach.domain.mypage.dto.request.UserUpdateRequestDto;
 import org.v1.job_coach.domain.chatroom.domain.ChatRoom;
@@ -26,7 +26,6 @@ import org.v1.job_coach.domain.community.domain.Board;
 import org.v1.job_coach.domain.community.domain.Comment;
 import org.v1.job_coach.domain.review.domain.Review;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
@@ -126,6 +125,9 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    @ManyToMany(mappedBy = "chatRoomMembers")
+    private Set<ChattingRoom> chattingRooms = new HashSet<>();
+
 
     //* @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     // 해당 필드를 JSON 직렬화와 역직렬화에서 "쓰기 전용"으로 설정
@@ -135,6 +137,11 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return this.email;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public Long getUserPid() {
+        return this.pid;
     }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

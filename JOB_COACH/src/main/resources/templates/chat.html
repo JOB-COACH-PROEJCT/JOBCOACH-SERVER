@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <style>
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            height: 200px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body>
+<input type="text" id="messageInput" placeholder="메시지를 입력하세요" />
+<button id="sendButton">전송</button>
+
+<div id="messages"></div>
+
+<script>
+    const socket = new SockJS('http://localhost:8080/chat-2d'); // 소켓 엔드포인트
+    const stompClient = Stomp.over(socket);
+
+    // const authToken = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJtaW5rZXlnb2RAbmF2ZXIuY29tIiwiaXNzIjoiR0FHVSMxIiwicm9sZXMiOlsiUk9MRV9VU0VSIl0sImlhdCI6MTcyNjQwNTc2MSwiZXhwIjoxNzI2NDA5MzYxfQ.HNZ7UZiZa2SzaOoTzUw4IejkpPHzYTVCciOKENDvvjE';
+
+    stompClient.connect({'Authorization': authToken}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        // const nickname = 'userNickname'; // 사용자 닉네임 설정
+        stompClient.subscribe('/user/' + "GAGU#1" + '/sub', function (message) { // 구독 경로
+            const receivedMessage = JSON.parse(message.body);
+            displayMessage(receivedMessage);
+        }, { 'Authorization': authToken }); // 구독 시 인증 헤더 추가
+
+        document.getElementById('sendButton').addEventListener('click', function () {
+            const contents = document.getElementById('messageInput').value;
+            if (contents.trim() === '') {
+                alert('메시지를 입력하세요!');
+                return;
+            }
+            const message = {
+                type: "LLM",
+                contents: contents
+            };
+            stompClient.send("/pub/gagu-chat/2d", {}, JSON.stringify(message)); // publish 경로
+            document.getElementById('messageInput').value = '';
+        });
+    }, function (error) {
+        console.error('WebSocket connection error: ' + error); // 연결 오류 처리
+    });
+
+    function displayMessage(message) {
+        console.log("Received message: ", message);
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+
+        // 메시지에 이미지 URL이 포함된 경우
+        if (message.image) {
+            const imgElement = document.createElement('img');
+            imgElement.src = message.image; // S3 URL 사용
+            imgElement.alt = 'Generated Image';
+            imgElement.style.maxWidth = "100%"; // 이미지 크기를 조절
+            imgElement.style.height = "auto"; // 비율 유지
+            messageElement.appendChild(imgElement);
+        } else {
+            messageElement.textContent = message.contents; // 일반 메시지 표시
+        }
+
+        messagesDiv.appendChild(messageElement);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // 스크롤을 맨 아래로
+    }
+</script>
+</body>
+</html>

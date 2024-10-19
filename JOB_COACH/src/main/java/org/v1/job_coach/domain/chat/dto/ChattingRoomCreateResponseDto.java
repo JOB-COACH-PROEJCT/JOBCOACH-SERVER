@@ -1,11 +1,11 @@
 package org.v1.job_coach.domain.chat.dto;
 
 public record ChattingRoomCreateResponseDto(
-        Long roomMakerId,
-        Long guestId,
+        Long userId,
+        Long coachId,
         String chatRoomId
 ){
-    public ChattingRoomCreateResponseDto toDto(Long roomMakerId, Long guestId, String chatRoomId) {
-        return new ChattingRoomCreateResponseDto(roomMakerId, guestId, chatRoomId);
+    public ChattingRoomCreateResponseDto toDto(Long userId, Long coachId, String chatRoomId) {
+        return new ChattingRoomCreateResponseDto(userId, coachId, chatRoomId);
     }
 }

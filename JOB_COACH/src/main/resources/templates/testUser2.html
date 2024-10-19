@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #e6e9ef;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,18 +17,21 @@
         }
 
         #chat-container {
-            background-color: #ffffff;
+            background-color: #f1f1f1;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 20px;
             width: 400px;
             max-width: 90%;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
         }
 
         #messageInput {
             width: calc(100% - 80px);
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 20px;
             border: 1px solid #ccc;
             margin-right: 10px;
         }
@@ -36,7 +39,7 @@
         #sendButton {
             padding: 10px;
             border: none;
-            border-radius: 5px;
+            border-radius: 20px;
             background-color: #007bff;
             color: white;
             cursor: pointer;
@@ -47,44 +50,102 @@
             background-color: #0056b3;
         }
 
+        #message-area {
+            display: flex;
+            margin-top: auto;
+            align-items: center;
+        }
+
         #messages {
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 10px;
             padding: 10px;
-            margin-top: 20px;
-            height: 300px;
+            height: 500px;
             overflow-y: scroll;
-            background-color: #f9f9f9;
+            background-color: #ffffff;
+            flex-grow: 1;
+            margin-bottom: 20px;
         }
 
-        #messages div {
+        #messages .message {
+            display: flex;
+            flex-direction: column;
             margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            max-width: 80%;
-            word-wrap: break-word;
         }
 
-        .user-message {
-            background-color: #d1e7dd;
-            color: #0f5132;
+        .user-message-container {
+            align-items: flex-end;
             text-align: right;
             align-self: flex-end;
         }
 
-        .other-message {
-            background-color: #f8d7da;
-            color: #842029;
+        .other-message-container {
+            align-items: flex-start;
             text-align: left;
             align-self: flex-start;
+        }
+
+        .profile-info {
+            font-weight: bold;
+            color: gray;
+            margin-bottom: 5px;
+        }
+
+        .message-content {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .user-message {
+            background-color: #ffffff;
+            color: #000000;
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            max-width: 75%;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .other-message {
+            background-color: #007bff;
+            color: white;
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            max-width: 75%;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .message-timestamp {
+            font-size: 10px;
+            color: gray;
+            margin-top: 2px;
+        }
+
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .user-message-container .profile-image {
+            margin-left: 10px;
+            margin-right: 0;
         }
     </style>
 </head>
 <body>
 <div id="chat-container">
-    <input type="text" id="messageInput" placeholder="메시지를 입력하세요" />
-    <button id="sendButton">전송</button>
     <div id="messages"></div>
+    <div id="message-area">
+        <input type="text" id="messageInput" placeholder="메시지를 입력하세요" />
+        <button id="sendButton">전송</button>
+    </div>
 </div>
 
 <script>
@@ -92,13 +153,13 @@
     const socket = new SockJS('http://localhost:8080/chat/inbox'); // 소켓 엔드포인트
     const stompClient = Stomp.over(socket);
 
-    const currentUserId = '2'; // 사용자 ID를 1로 고정
+    const currentUserId = '13'; // 사용자 ID를 고정
 
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
 
         // 특정 채팅방 경로 구독
-        const roomId = 'f7b46d10-44da-46e7-8b55-74fb774790a2'; // 테스트용 Room ID
+        const roomId = 'd95e9b87-9723-459c-9179-b58696db9171'; // 테스트용 Room ID
         stompClient.subscribe('/sub/channel/' + roomId, function (message) {
             const receivedMessage = JSON.parse(message.body);
             displayMessage(receivedMessage);
@@ -128,16 +189,49 @@
         console.log("Received message: ", message);
         const messagesDiv = document.getElementById('messages');
         const messageElement = document.createElement('div');
-        messageElement.textContent = `[${message.authorId}] ${message.message}`; // 사용자 정보를 포함하여 표시
+        const messageContainer = document.createElement('div');
+        messageContainer.classList.add('message');
+
+        // 프로필 정보 추가
+        const profileInfo = document.createElement('div');
+        profileInfo.classList.add('profile-info');
+        profileInfo.textContent = `${message.authorName} (UserID: ${message.authorId})`;
+
+        // 프로필 이미지 추가
+        const profileImage = document.createElement('img');
+        profileImage.src = message.profileImageUrl;
+        profileImage.alt = 'profile image';
+        profileImage.classList.add('profile-image');
+
+        // 메시지 HTML 생성
+        const messageContent = document.createElement('div');
+        messageContent.classList.add('message-content');
+        messageContent.innerHTML = `
+            <div>${message.message}</div>
+        `;
 
         // 메시지 스타일 지정
         if (message.authorId === currentUserId) {
-            messageElement.classList.add('user-message');
+            messageContainer.classList.add('user-message-container');
+            messageContent.classList.add('user-message');
+            messageContent.appendChild(profileImage); // 프로필 이미지를 오른쪽에
         } else {
-            messageElement.classList.add('other-message');
+            messageContainer.classList.add('other-message-container');
+            messageContent.classList.add('other-message');
+            messageContent.insertBefore(profileImage, messageContent.firstChild); // 프로필 이미지를 왼쪽에
         }
 
-        messagesDiv.appendChild(messageElement);
+        // 시간 정보 추가
+        const messageTimestamp = document.createElement('div');
+        messageTimestamp.classList.add('message-timestamp');
+        messageTimestamp.textContent = new Date(message.createdAt).toLocaleTimeString();
+
+        // 메시지 요소 구성
+        messageContainer.appendChild(profileInfo);
+        messageContainer.appendChild(messageContent);
+        messageContainer.appendChild(messageTimestamp);
+
+        messagesDiv.appendChild(messageContainer);
         messagesDiv.scrollTop = messagesDiv.scrollHeight; // 스크롤을 맨 아래로
     }
 </script>

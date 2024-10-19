@@ -21,7 +21,7 @@ import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.domain.User;
 
 @Slf4j
-@Tag(name = "ChatRoom", description = "모의면접 API")
+@Tag(name = "Interview", description = "모의면접 API")
 @RestController
 @RequestMapping("/api/v1/interview")
 public class ChatRoomController {
@@ -36,9 +36,9 @@ public class ChatRoomController {
     }
 
     /* 모의 면접 채팅방을 모두 반환하는 컨트롤러 생성해야 함 */
-    @PostMapping("/chat-rooms")
+    @PostMapping("/interview-rooms")
     @Operation(summary = "모의면접 생성 API", description = "모의면접 채팅방을 생성하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true),})
+    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> createChatRoom(@AuthenticationPrincipal User user,
                                             @RequestParam String roomName) {
         ResultResponseDto<?> chatRoomDto = chatRoomService.createChatRoom(user, roomName);
@@ -46,25 +46,25 @@ public class ChatRoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomDto);
     }
 
-    @PutMapping("/chat-rooms/{chatRoomId}/deactivate")
+    @PutMapping("/interview-rooms/{roomId}/deactivate")
     @Operation(summary = "모의면접 종료 API", description = "모의면접 채팅을 종료하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> endChatRoom(@AuthenticationPrincipal User user,
-                                         @PathVariable Long chatRoomId) {
-        ResultResponseDto<?> resultResponseDto = chatRoomService.deactivateChatRoom(user, chatRoomId);
-        log.info("[ChatRoom 종료] chatRoomId: {}", chatRoomId);
+                                         @PathVariable Long roomId) {
+        ResultResponseDto<?> resultResponseDto = chatRoomService.deactivateChatRoom(user, roomId);
+        log.info("[ChatRoom 종료] roomId: {}", roomId);
         return ResponseEntity.status(HttpStatus.OK).body(resultResponseDto);
     }
 
-    @PostMapping("/chat-rooms/{chatRoomId}/answers")
+    @PostMapping("/interview-rooms/{roomId}/answers")
     @Operation(summary = "모의면접 답변 저장 API", description = "모의면접 질문에 응답한 사용자 답변을 저장하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> saveAnswer(@AuthenticationPrincipal User user,
-                                        @PathVariable Long chatRoomId,
+                                        @PathVariable Long roomId,
                                         @RequestBody AnswerRequestDto answerRequestDto) throws Exception {
 
         // 서비스 호출을 통해 Answer와 Consulting 모두 저장
-        AnswerResponseDto answerResponseDto = chatRoomService.saveAnswer(user, answerRequestDto, chatRoomId);
+        AnswerResponseDto answerResponseDto = chatRoomService.saveAnswer(user, answerRequestDto, roomId);
 
         // 응답 메시지 생성
         ResultResponseDto<?> saveAnswerResponseDto = chatRoomService.toSaveAnswerResponseDto(answerResponseDto.id());
@@ -73,25 +73,25 @@ public class ChatRoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saveAnswerResponseDto);
     }
 
-    @GetMapping("/chat-rooms/{chatRoomId}/questions")
+    @GetMapping("/interview-rooms/{roomId}/questions")
     @Operation(summary = "모의면접 질문 반환 API", description = "모의면접 질문을 반환하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
-    public ResponseEntity<?> getQuestion(@AuthenticationPrincipal User user, @PathVariable Long chatRoomId) {
+    public ResponseEntity<?> getQuestion(@AuthenticationPrincipal User user, @PathVariable Long roomId) {
 
-        log.info("채빙탕 ID {} -> 질문 요청", chatRoomId);
-        ResultResponseDto<?> question = chatRoomService.getQuestion(user, chatRoomId);
+        log.info("채빙탕 ID {} -> 질문 요청", roomId);
+        ResultResponseDto<?> question = chatRoomService.getQuestion(user, roomId);
         log.info("[Question 반환] Question: {}", question.data());
         return ResponseEntity.status(HttpStatus.OK).body(question);
     }
 
-    @DeleteMapping("/chat-rooms/{chatRoomId}")
+    @DeleteMapping("/interview-rooms/{roomId}")
     @Operation(summary = "모의면접 채팅방 삭제 API", description = "모의면접 채팅방을 삭제하는 API입니다.")
     @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> deleteChatRoom(@AuthenticationPrincipal User user,
-                                            @PathVariable Long chatRoomId) {
+                                            @PathVariable Long roomId) {
 
-        ResultResponseDto<?> resultResponseDto = chatRoomService.deleteChatRoom(user, chatRoomId);
-        log.info("[ChatRoom 삭제] User: {}, chatRoomId: {}", user, chatRoomId);
+        ResultResponseDto<?> resultResponseDto = chatRoomService.deleteChatRoom(user, roomId);
+        log.info("[ChatRoom 삭제] User: {}, roomId: {}", user, roomId);
 
         return ResponseEntity.status(HttpStatus.OK).body(resultResponseDto);
     }

@@ -8,10 +8,15 @@ import org.v1.job_coach.coach.domain.Coach;
 import org.v1.job_coach.coach.domain.Matching;
 import org.v1.job_coach.user.domain.User;
 
+import java.util.Optional;
+
 @Repository
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
     Page<Matching> findByUser(User user, Pageable pageable);
 
     Page<Matching> findByCoach(Coach coach, Pageable pageable);
+
+    Optional<Matching> findByUser_PidAndCoach_Pid(Long userId, Long coachId);
+
 
 }

@@ -1,8 +1,11 @@
+/*
 package org.v1.job_coach.domain.chat.api;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.v1.job_coach.domain.chat.dto.ChatMessageDto;
 import org.v1.job_coach.domain.chat.application.ChatMessageService;
@@ -11,6 +14,8 @@ import org.v1.job_coach.domain.chat.domain.ChatMessage;
 
 @Slf4j
 @RestController
+@Tag(name = "ChatRoom", description = "모의면접 API")
+@RequestMapping("/api/v1/chattingRoom")
 public class ChatMessageController {
     private final ChatMessageService chatMessageService;
     private final ChattingRoomService chattingRoomService;
@@ -34,3 +39,4 @@ public class ChatMessageController {
         messagingTemplate.convertAndSend("/sub/channel/"+message.roomId(), newChat);
     }
 }
+*/

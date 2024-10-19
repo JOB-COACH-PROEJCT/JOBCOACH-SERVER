@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.v1.job_coach.coach.domain.Coach;
 import org.v1.job_coach.user.domain.User;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Getter
+@Slf4j
 @Entity
 @Table(name = "ChattingRoom")
 @DynamicUpdate
@@ -33,9 +36,9 @@ public class ChattingRoom {
     @JoinColumn(name = "lastChatMesg_id")
     private ChatMessage lastChatMsg;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "ChatRoom_Members",
-            joinColumns = @JoinColumn(name = "chatRoom_id"),
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "chat_room_members",
+            joinColumns = @JoinColumn(name = "chat_room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> chatRoomMembers = new HashSet<>();
 
@@ -54,9 +57,12 @@ public class ChattingRoom {
         this.id = randomId;
     }
 
-    public void addMembers(User roomMaker, User guest) {
-        this.chatRoomMembers.add(roomMaker);
-        this.chatRoomMembers.add(guest);
+    public void addMembers(User user, Coach coach) {
+        log.info("[ChattingRoom] addMembers - User: {}, Coach: {}", user.getPid(), coach.getPid());
+        this.chatRoomMembers.add(user);
+        this.chatRoomMembers.add(coach);
+        log.info("[ChattingRoom] addMembers 주입 완료 - User: {}, Coach: {}", this.chatRoomMembers.add(user), this.chatRoomMembers.add(coach));
+
     }
 
     public boolean isMember(User user) {

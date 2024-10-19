@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.v1.job_coach.global.util.DateFormatter;
 
 import java.time.LocalDateTime;
 
@@ -29,18 +30,28 @@ public class ChatMessage {
     @JoinColumn(name = "author_id", insertable = false, updatable = false)
     private String authorId; //단순히 ID 값만 필요 (User)
 
+
     @Column(name = "message")
     private String message;
 
+    @Column(name = "author_name")
+    private String authorName; // 사용자 이름 추가
+
+    @Column(name = "profile_image_url")
+    private String profileImageUrl; // 프로필 이미지 URL 추가
+
     @Column(name = "createdAt", updatable = false)
     @CreatedDate
-    private LocalDateTime createdAt;
+    private String createdAt;
 
-    public ChatMessage(String roomId, String authorId, String message) {
+    public ChatMessage(String roomId, String authorId, String authorName,String profileImageUrl, String message) {
         this.roomId = roomId;
         this.authorId = authorId;
+        this.authorName = authorName;
+        this.profileImageUrl = profileImageUrl;
         this.message = message;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = DateFormatter.getDateNow(LocalDateTime.now());
     }
+
 
 }

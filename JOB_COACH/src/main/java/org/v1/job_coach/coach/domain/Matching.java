@@ -2,6 +2,7 @@ package org.v1.job_coach.coach.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.v1.job_coach.domain.chat.domain.ChattingRoom;
 import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.domain.User;
@@ -35,11 +36,18 @@ public class Matching {
     @Column
     private LocalDateTime scheduledAt;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "chatting_room_id")
+    private ChattingRoom chattingRoom;
+
     public Matching(User user, Coach coach) {
         this.user = user;
         this.coach = coach;
         this.requestedAt = LocalDateTime.now();
         this.status = MatchingStatus.REQUESTED;
+    }
+    public void createChattingRoom(ChattingRoom newRoom) {
+        this.chattingRoom = newRoom;
     }
 
     public void accept() {

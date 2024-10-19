@@ -34,10 +34,11 @@ public class ChatMessageService {
             throw new CustomException(Error.ACCESS_DENIED);
         }
 
-        ChatMessage chatMessage = chatMessageDto.toEntity();
+        User author = userRepository.findById(Long.valueOf(chatMessageDto.authorId())).orElseThrow(() -> new CustomException(Error.NOT_FOUND_USER));
+
+        ChatMessage chatMessage = chatMessageDto.toEntity(author.getName(), author.getProfile());
         log.info("[ChatMessage] ChatMessage 생성 완료: {}", chatMessage.getId());
         log.info("[ChatMessage] ChatMessage 내용: {} , Author: {}", chatMessage.getMessage(), chatMessage.getAuthorId());
-
         chattingRoom.lastChatMsg(chatMessage);
         chattingRoomRepository.save(chattingRoom);
         log.info("[ChatMessage] ChatRoom 메세지 추가 후 저장 완료 . . .");

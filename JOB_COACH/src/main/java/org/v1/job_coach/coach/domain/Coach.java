@@ -13,8 +13,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor
-/*JPA에서 상속 관계를 매핑할 때 사용하는 어노테이션*/
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED) /*JPA에서 상속 관계를 매핑할 때 사용하는 어노테이션*/
 public class Coach extends User {
 
     private String university;

@@ -12,10 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.web.cors.CorsConfiguration;
 import org.v1.job_coach.global.auth.handler.CustomAccessDeniedHandler;
 import org.v1.job_coach.global.auth.handler.CustomAuthenticationEntryPoint;
 import org.v1.job_coach.global.auth.jwt.JwtAuthenticationFilter;
 import org.v1.job_coach.global.auth.jwt.JwtTokenProvider;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity /* ->스프링 시큐리티 필터가 스프링 필터체인에 등록된다. */
@@ -40,6 +43,16 @@ public class SecurityConfig {
         HttpSessionRequestCache cache = new HttpSessionRequestCache();
         //로그인하면 뒤에 자꾸 ?continue 이런거 뜨는데 잠시 비활성화 해주려고 일단 추가함
         cache.setMatchingRequestParameterName(null);
+
+        http.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(List.of("http://localhost:3000"));
+            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+            config.setAllowedHeaders(List.of("*"));
+            config.setExposedHeaders(List.of("Authorization"));
+            config.setAllowCredentials(true);
+            return config;
+        }));
 
         http.csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .headers(header -> header.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))

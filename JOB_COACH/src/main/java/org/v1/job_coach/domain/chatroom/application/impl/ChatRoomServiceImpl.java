@@ -112,15 +112,24 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         // 비동기적으로 Consulting 처리
         consultingService.processConsulting(answer.getId())
                 .thenAccept(consultingResult -> {
-                            // 비동기 작업이 완료된 후 Consulting을 Answer에 추가하고 저장
-                            Consulting consulting = new Consulting(
-                                    answer.getChatRoom(),
-                                    answer.getQuestion(),
-                                    answer, consultingResult,
-                                    answer.getUser());
-                            answer.addConsulting(consulting);
-                            consultingRepository.save(consulting);
-                        });
+                    // Consulting 생성 및 저장 전 로깅 추가
+                    log.info("비동기 작업 완료 후 Consulting 객체 생성 시작. Answer ID: {}, Consulting 결과: {}", answer.getId(), consultingResult);
+
+                    Consulting consulting = new Consulting(
+                            answer.getChatRoom(),
+                            answer.getQuestion(),
+                            answer, consultingResult,
+                            answer.getUser());
+
+                    answer.addConsulting(consulting);
+
+                    log.info("Consulting 객체 생성 완료. Consulting 정보: {}", consulting);
+
+                    consultingRepository.save(consulting);
+
+                    // Consulting 저장 후 로깅 추가
+                    log.info("Consulting 객체 저장 완료. Consulting ID: {}", consulting.getId());
+                });
         // 다음 질문 던지기
         askNextQuestion(user, chatRoom);
         return AnswerResponseDto.toAnswerResponseDto(answer);

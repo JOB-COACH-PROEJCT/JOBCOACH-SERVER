@@ -34,7 +34,6 @@ public class ChattingRoomController {
     }
     @PostMapping("/personal") //개인 DM 채팅방 생성
     @Operation(summary = "코치와 채팅 생성 API", description = "코치와 1:1 채팅방을 생성하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ChattingRoomCreateResponseDto createPersonalChatRoom(@RequestBody ChattingRoomCreateRequestDto request) {
         log.info("[ChattingRoom 생성]user:{}, coach:{}", request.userId(), request.coachId());
         return chattingRoomService.createChatRoomForPersonal(request);
@@ -43,7 +42,9 @@ public class ChattingRoomController {
     @MessageMapping("/message")
     @Operation(summary = "메세지 생성 API", description = "메세지를 생성하는 API입니다.")
     public void sendMessage(ChatMessageDto message) {
-        log.info("[ChatMessageController] sendMessage 메소드 진입 - Room ID: {}, Author ID: {}, Message: {}", message.roomId(), message.authorId(), message.message());
+        log.info("[ChatMessageController] sendMessage 메소드 진입 - Room ID: {}, Author ID: {}, Message: {}",
+                message.roomId(), message.authorId(), message.message());
+
 
         // 실시간으로 방에서 채팅하기
         ChatMessage newChat = chatMessageService.createChatMessage(message);

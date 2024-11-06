@@ -46,7 +46,7 @@ public class ConsultingController {
 
     @GetMapping("/room/{roomId}")
     @Operation(summary = "해당 채팅방에서 특정 페이지의 질문, 답변, 컨설팅 가져오는 API", description = "해당 채팅방의 컨설팅 리스트를 반환하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
+    //@Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> getConsultingByPage(@PathVariable Long roomId,
                                                  @AuthenticationPrincipal User user,
                                                  @RequestParam(value = "page", defaultValue = "0") int page) {
@@ -58,7 +58,6 @@ public class ConsultingController {
 
     @DeleteMapping("/room/{roomId}")
     @Operation(summary = "면접 채팅방 삭제 API", description = "면접채팅방을 삭제하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> deleteChatRoom(@AuthenticationPrincipal User user,
                                             @PathVariable Long roomId) {
         ResultResponseDto<?> resultResponseDto = chatRoomService.deleteChatRoom(user, roomId);

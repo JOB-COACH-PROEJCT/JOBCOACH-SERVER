@@ -38,7 +38,6 @@ public class ChatRoomController {
     /* 모의 면접 채팅방을 모두 반환하는 컨트롤러 생성해야 함 */
     @PostMapping("/interview-rooms")
     @Operation(summary = "모의면접 생성 API", description = "모의면접 채팅방을 생성하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> createChatRoom(@AuthenticationPrincipal User user,
                                             @RequestParam String roomName) {
         ResultResponseDto<?> chatRoomDto = chatRoomService.createChatRoom(user, roomName);
@@ -48,7 +47,6 @@ public class ChatRoomController {
 
     @PutMapping("/interview-rooms/{roomId}/deactivate")
     @Operation(summary = "모의면접 종료 API", description = "모의면접 채팅을 종료하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> endChatRoom(@AuthenticationPrincipal User user,
                                          @PathVariable Long roomId) {
         ResultResponseDto<?> resultResponseDto = chatRoomService.deactivateChatRoom(user, roomId);
@@ -58,7 +56,6 @@ public class ChatRoomController {
 
     @PostMapping("/interview-rooms/{roomId}/answers")
     @Operation(summary = "모의면접 답변 저장 API", description = "모의면접 질문에 응답한 사용자 답변을 저장하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> saveAnswer(@AuthenticationPrincipal User user,
                                         @PathVariable Long roomId,
                                         @RequestBody AnswerRequestDto answerRequestDto) throws Exception {
@@ -75,7 +72,6 @@ public class ChatRoomController {
 
     @GetMapping("/interview-rooms/{roomId}/questions")
     @Operation(summary = "모의면접 질문 반환 API", description = "모의면접 질문을 반환하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> getQuestion(@AuthenticationPrincipal User user, @PathVariable Long roomId) {
 
         log.info("채빙탕 ID {} -> 질문 요청", roomId);
@@ -86,7 +82,6 @@ public class ChatRoomController {
 
     @DeleteMapping("/interview-rooms/{roomId}")
     @Operation(summary = "모의면접 채팅방 삭제 API", description = "모의면접 채팅방을 삭제하는 API입니다.")
-    @Parameters({@Parameter(name = "Authorization", description = "access_token", required = true)})
     public ResponseEntity<?> deleteChatRoom(@AuthenticationPrincipal User user,
                                             @PathVariable Long roomId) {
 

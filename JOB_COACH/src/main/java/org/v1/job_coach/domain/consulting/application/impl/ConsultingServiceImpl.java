@@ -62,27 +62,33 @@ public class ConsultingServiceImpl implements ConsultingService {
         this.userRepository = userRepository;
     }
 
-    @Transactional
-    @Async
-    public CompletableFuture<String> processConsulting(Long answerId){
-        // Answer 객체 조회
-        Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_ANSWER));
-        Map<String, Object> responseMap = callChatGpt(answer);
-        List<Map<String, Object>> choices = (List<Map<String, Object>>) responseMap.get("choices");
+    public CompletableFuture<String> processConsulting(Long answerId) {
+        log.info("[processConsulting] 비동기 메서드 시작, Answer ID: {}", answerId); // 호출 확인 로그
 
-        if (choices != null && !choices.isEmpty()) {
-            Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
-            String content = (String) message.get("content");
+        try {
+            Answer answer = answerRepository.findById(answerId)
+                    .orElseThrow(() -> new CustomException(Error.NOT_FOUND_ANSWER));
+            log.info("[processConsulting] Answer 조회 성공: {}", answer.getContent()); // Answer 조회 확인 로그
 
-            // 작업 완료 후 결과 반환
-            return CompletableFuture.completedFuture("작업 완료");
-        } else {
-            log.error("[(ConsultingService.java) processConsulting] OpenAI API 응답 오류");
-            throw new CustomException(Error.ERROR_OPENAI_RESPONSE);
+            Map<String, Object> responseMap = callChatGpt(answer);
+            log.info("[processConsulting] API 호출 성공, 응답 데이터: {}", responseMap); // API 호출 성공 확인 로그
+
+            List<Map<String, Object>> choices = (List<Map<String, Object>>) responseMap.get("choices");
+            if (choices != null && !choices.isEmpty()) {
+                String content = (String) ((Map<String, Object>) choices.get(0).get("message")).get("content");
+                log.info("[processConsulting] 결과 데이터 생성: {}", content); // 결과 생성 로그
+
+                return CompletableFuture.completedFuture(content);
+            } else {
+                log.error("[(ConsultingService.java) processConsulting] OpenAI API 응답 오류");
+                throw new CustomException(Error.ERROR_OPENAI_RESPONSE);
+            }
+        } catch (Exception e) {
+            log.error("[processConsulting] 중 예외 발생", e);
+            return CompletableFuture.failedFuture(e);
         }
     }
 
-    @Transactional
     public Map<String, Object> callChatGpt(Answer answer) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -108,7 +114,6 @@ public class ConsultingServiceImpl implements ConsultingService {
         }
     }
 
-    @Transactional
     public Map<String, Object> createConsulting(Answer answer, String model) {
         Map<String, Object> bodyMap = new HashMap<>();
         bodyMap.put("model", model);

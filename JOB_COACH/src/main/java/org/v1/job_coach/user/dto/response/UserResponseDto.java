@@ -8,6 +8,6 @@ public record UserResponseDto(
         String email
 ) {
     public static UserResponseDto toDto(User user) {
-        return new UserResponseDto(user.getPid(), user.getUsername(), user.getEmail());
+        return new UserResponseDto(user.getPid(), user.getName(), user.getEmail());
     }
 }

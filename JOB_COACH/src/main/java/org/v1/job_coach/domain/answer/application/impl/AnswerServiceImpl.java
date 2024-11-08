@@ -30,10 +30,9 @@ public class AnswerServiceImpl implements AnswerService{
         Pageable pageable = PageRequest.of(page, 10);
         Page<Answer> answers = answerRepository.findByQuestionId(questionId, pageable);
 
-        if (page >= answers.getTotalPages()) {
+        if (page > answers.getTotalPages()) {
             throw new CustomException(Error.INVALID_PAGE);
         }
-
 
         List<AnswerResponseDto> collect = answers.stream()
                 .map(AnswerResponseDto::toDto)

@@ -44,6 +44,18 @@ public class ChatRoomController {
         log.info("[ChatRoom 생성] user: {}, roomName: {}", user, roomName);
         return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomDto);
     }
+    public ResultResponseDto<?> getChatRoom(@AuthenticationPrincipal User user, @PathVariable Long roomId) {
+        return chatRoomService.getChatRoom(user, roomId);
+    }
+
+    @GetMapping("/interview-rooms/{roomId}")
+    @Operation(summary = "하나의 모의면접 조회 API", description = "하나의 모의면접 채팅방을 조회하는 API입니다.")
+    public ResponseEntity<?> createChatRoom(@AuthenticationPrincipal User user,
+                                            @PathVariable Long roomId) {
+        ResultResponseDto<?> chatRoomDto = chatRoomService.getChatRoom(user, roomId);
+        log.info("[ChatRoom 조회] roomId: {}", roomId);
+        return ResponseEntity.status(HttpStatus.OK).body(chatRoomDto);
+    }
 
     @PutMapping("/interview-rooms/{roomId}/deactivate")
     @Operation(summary = "모의면접 종료 API", description = "모의면접 채팅을 종료하는 API입니다.")

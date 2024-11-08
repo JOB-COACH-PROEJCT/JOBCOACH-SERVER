@@ -12,6 +12,7 @@ import org.v1.job_coach.domain.mypage.application.UserService;
 import org.v1.job_coach.domain.mypage.dto.request.UserUpdateRequestDto;
 import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.domain.User;
+import org.v1.job_coach.user.dto.UserDto;
 
 @Tag(name = "MyPage", description = "마이페이지 API")
 @RestController
@@ -23,6 +24,13 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal User user) {
+        ResultResponseDto<?> currentUser = userService.getCurrentUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(currentUser);
+    }
+
     @Operation(summary = "회원 정보 조회", description = "회원정보를 조회합니다.",
             responses = {@ApiResponse(responseCode = "200", description = "성공"), @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음")})
     @GetMapping("/my-page")

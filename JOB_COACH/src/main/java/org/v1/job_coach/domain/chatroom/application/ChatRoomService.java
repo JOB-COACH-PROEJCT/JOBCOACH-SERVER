@@ -14,6 +14,7 @@ import org.v1.job_coach.user.domain.User;
 
 public interface ChatRoomService {
 
+    ResultResponseDto<?> getChatRoom(User user, Long roomId);
     ResultResponseDto<Page<?>> getChatRooms(User user, int page);
 
     /* 새로운 채팅방 생성하기 -> 채팅방 객체 생성 */

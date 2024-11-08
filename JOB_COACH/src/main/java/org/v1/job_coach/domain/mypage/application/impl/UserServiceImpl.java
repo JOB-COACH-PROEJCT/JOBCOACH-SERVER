@@ -2,6 +2,7 @@ package org.v1.job_coach.domain.mypage.application.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.v1.job_coach.domain.mypage.application.UserService;
@@ -14,6 +15,7 @@ import org.v1.job_coach.global.error.CustomException;
 import org.v1.job_coach.global.error.Error;
 import org.v1.job_coach.user.dao.UserRepository;
 import org.v1.job_coach.user.domain.User;
+import org.v1.job_coach.user.dto.UserDto;
 
 @Slf4j
 @Service
@@ -32,6 +34,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public ResultResponseDto<?> getUserInfo(User user) {
         return ResultResponseDto.toDataResponseDto(200, "회원 정보를 성공적으로 불러왔습니다.", UserInfoResponseDto.toDto(isUserValid(user)));
+    }
+
+    @Override
+    @Transactional
+    public ResultResponseDto<?> getCurrentUser(@AuthenticationPrincipal User user){
+        isUserValid(user);
+        UserDto userDto = new UserDto(user.getEmail(), user.getUsername(), user.getNumber());
+        return ResultResponseDto.toDataResponseDto(200, "성공적으로 User 정보를 반환합니다.", userDto);
     }
     
 

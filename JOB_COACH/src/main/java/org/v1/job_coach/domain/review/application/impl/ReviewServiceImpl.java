@@ -65,7 +65,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         Page<Review> reviews = reviewRepository.findAll(pageable);
 
-        if (page >= reviews.getTotalPages()){
+        if (page > reviews.getTotalPages()){
             throw new CustomException(Error.INVALID_PAGE);
         }
 

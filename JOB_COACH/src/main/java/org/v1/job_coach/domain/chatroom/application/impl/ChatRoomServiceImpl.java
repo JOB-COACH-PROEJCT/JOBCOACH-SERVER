@@ -21,6 +21,7 @@ import org.v1.job_coach.domain.chatroom.domain.ChatRoomStatus;
 import org.v1.job_coach.domain.chatroom.domain.Question;
 import org.v1.job_coach.domain.chatroom.dto.response.AnswerResponseDto;
 import org.v1.job_coach.domain.chatroom.dto.response.ChatRoomResponseDto;
+import org.v1.job_coach.domain.chatroom.dto.response.DetailsChatRoomResponseDto;
 import org.v1.job_coach.domain.chatroom.dto.response.QuestionResponseDto;
 import org.v1.job_coach.domain.consulting.application.ConsultingService;
 import org.v1.job_coach.domain.consulting.dao.ConsultingRepository;
@@ -51,6 +52,14 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         this.consultingRepository = consultingRepository;
         this.answerRepository = answerRepository;
         this.consultingService = consultingService;
+    }
+
+    @Transactional
+    public ResultResponseDto<?> getChatRoom(User user, Long roomId) {
+        extracted(user, roomId);
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new CustomException(Error.NOT_FOUND_CHATROOM));
+
+        return ResultResponseDto.toDataResponseDto(200, "모의면접 채팅방을 성공적으로 반환하였습니다. RoomID:" + roomId, DetailsChatRoomResponseDto.toDto(chatRoom));
     }
 
     @Override

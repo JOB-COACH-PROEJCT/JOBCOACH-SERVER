@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "ogging.level.org.v1.job_coach",
+      "type": "java.lang.String",
+      "description": "Description for ogging.level.org.v1.job_coach."
+  }
+] }

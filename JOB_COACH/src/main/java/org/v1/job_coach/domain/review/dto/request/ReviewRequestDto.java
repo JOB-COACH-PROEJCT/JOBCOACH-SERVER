@@ -1,18 +1,39 @@
 package org.v1.job_coach.domain.review.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import org.v1.job_coach.coach.domain.Expertise;
+import org.v1.job_coach.domain.review.domain.WorkExpertise;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 public record ReviewRequestDto(
         @NotBlank(message = "제목은 필수 항목입니다.")
         @Size(min = 2, max = 20, message = "2자 이상, 20자 이하로 입력해주세요.")
         @Schema(description = "면접 리뷰 제목", defaultValue = "HA 기업 면접 후기")
         String title,
+
+        @NotBlank(message = "직종은 필수 항목입니다.")
+        @Size(min = 2, max = 20, message = "2자 이상, 20자 이하로 입력해주세요.")
+        @Schema(description = "면접 리뷰 직종", defaultValue = "PROJECT_MANAGEMENT")
+        String expertise,
+
+        @NotBlank(message = "경력은 필수 항목입니다.")
+        @Size(min = 2, max = 20, message = "2자 이상, 20자 이하로 입력해주세요.")
+        @Schema(description = "면접 리뷰 경력", defaultValue = "ENTRY_LEVEL")
+        String workExpertise,
+
+        @NotBlank(message = "면접 날짜는 필수 항목입니다.")
+        @Size(min = 2, max = 20, message = "2자 이상, 20자 이하로 입력해주세요.")
+        @Schema(description = "면접 리뷰 면접 날짜", defaultValue = "2024-10-08")
+        String interviewDate,
 
         @NotBlank(message = "기업명은 필수 항목입니다.")
         @Schema(description = "면접 리뷰 회사", defaultValue = "HA 주식회사")
@@ -37,6 +58,11 @@ public record ReviewRequestDto(
         @NotBlank(message = "내용을 입력해주세요.")
         @Schema(description = "면접 Tip", defaultValue = "면접 준비 시 자기소개서 내용을 철저히 준비하는 것이 중요합니다. 또한, 회사의 최근 이슈에 대해 파악하고 그에 맞는 질문이 나올 수 있으니 대비하는 것이 좋습니다.")
         String tips
+
 ) {
+
+        public LocalDate getInterviewDateAsLocalDate() {
+                return LocalDate.parse(this.interviewDate);
+        }
 }
 

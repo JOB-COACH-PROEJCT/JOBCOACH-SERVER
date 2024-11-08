@@ -6,8 +6,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.v1.job_coach.coach.domain.Expertise;
 import org.v1.job_coach.domain.review.dto.request.ReviewRequestDto;
 import org.v1.job_coach.user.domain.User;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,6 +36,15 @@ public class Review {
     @Enumerated(EnumType.STRING)
     private ReviewResult result;  // 결과 (합격, 불합격)
 
+    @Enumerated(EnumType.STRING)
+    private Expertise expertise;  // 직종
+
+    @Enumerated(EnumType.STRING)
+    private WorkExpertise workExpertise;    //경력
+
+    @Column(nullable = false)
+    private LocalDateTime interviewDate; // 인터뷰 날짜 (LocalDateTime)
+
     @Lob
     @NotBlank(message = "내용을 입력해주세요.")
     private String process;   // 진행 방식
@@ -42,7 +54,7 @@ public class Review {
     @CollectionTable(name = "review_questions", joinColumns = @JoinColumn(name = "review_id"))
     private List<String> interviewQuestions;   // 면접 질문
 
-    @Column
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createDate;
 
     @Lob
@@ -59,10 +71,13 @@ public class Review {
         this.companyName = reviewRequestDto.companyName();
         this.evaluation = Evaluation.valueOf(reviewRequestDto.evaluation());
         this.result = ReviewResult.valueOf(reviewRequestDto.result());
+        this.expertise = Expertise.valueOf(reviewRequestDto.expertise());
+        this.interviewDate = LocalDate.parse(reviewRequestDto.interviewDate()).atStartOfDay(); // LocalDateTime으로 변환
+        this.workExpertise = WorkExpertise.valueOf(reviewRequestDto.workExpertise());
         this.process = reviewRequestDto.process();
         this.interviewQuestions = reviewRequestDto.interviewQuestions();
-        this.createDate = LocalDateTime.now();
         this.tips = reviewRequestDto.tips();
+        this.createDate = LocalDateTime.now();
         this.user = user;
     }
 
@@ -70,12 +85,14 @@ public class Review {
         this.id = id;
         this.title = title;
         this.companyName = companyName;
-        this.createDate = createDate;
-        this.createDate = LocalDateTime.now();
+        this.createDate= createDate;
     }
 
     public void update(ReviewRequestDto reviewRequestDto) {
         this.title = reviewRequestDto.title();
+        this.expertise = Expertise.valueOf(reviewRequestDto.expertise());
+        this.interviewDate = LocalDate.parse(reviewRequestDto.interviewDate()).atStartOfDay(); // LocalDateTime으로 변환
+        this.workExpertise = WorkExpertise.valueOf(reviewRequestDto.workExpertise());
         this.companyName = reviewRequestDto.companyName();
         this.evaluation = Evaluation.valueOf(reviewRequestDto.evaluation());
         this.result = ReviewResult.valueOf(reviewRequestDto.result());

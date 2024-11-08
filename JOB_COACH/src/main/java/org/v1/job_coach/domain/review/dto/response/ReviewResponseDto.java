@@ -1,11 +1,12 @@
 package org.v1.job_coach.domain.review.dto.response;
 
-import lombok.Builder;
+import org.v1.job_coach.domain.review.domain.Evaluation;
 import org.v1.job_coach.domain.review.domain.Review;
+import org.v1.job_coach.domain.review.domain.WorkExpertise;
 import org.v1.job_coach.global.util.DateFormatter;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.text.DateFormat;
+import java.time.LocalDate;
 
 public record ReviewResponseDto(
         String title,
@@ -13,16 +14,23 @@ public record ReviewResponseDto(
         String evaluation,
         String result,
         String userName,
-        String createDate
+        String createDate,
+        Evaluation expertise,
+        WorkExpertise workExpertise,
+        String interviewDate
 )
 {
     public static ReviewResponseDto toDto(Review review) {
-    return new ReviewResponseDto(
-            review.getTitle(),
-            review.getCompanyName(),
-            String.valueOf(review.getEvaluation()),
-            String.valueOf(review.getResult()),
-            review.getUser().getName(),
-            DateFormatter.getDateNow(review.getCreateDate()));
+        return new ReviewResponseDto(
+                review.getTitle(),
+                review.getCompanyName(),
+                String.valueOf(review.getEvaluation()),
+                String.valueOf(review.getResult()),
+                review.getUser().getName(),
+                DateFormatter.formatDate(review.getCreateDate().toLocalDate()), // LocalDate 형식으로 포맷
+                review.getEvaluation(),
+                review.getWorkExpertise(),
+                DateFormatter.formatDate(review.getInterviewDate().toLocalDate()) // LocalDate 형식으로 포맷
+        );
     }
 }

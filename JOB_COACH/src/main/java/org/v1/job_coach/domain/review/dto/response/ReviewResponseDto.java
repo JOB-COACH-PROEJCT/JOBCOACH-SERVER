@@ -1,5 +1,6 @@
 package org.v1.job_coach.domain.review.dto.response;
 
+import org.v1.job_coach.coach.domain.Expertise;
 import org.v1.job_coach.domain.review.domain.Evaluation;
 import org.v1.job_coach.domain.review.domain.Review;
 import org.v1.job_coach.domain.review.domain.WorkExpertise;
@@ -15,7 +16,7 @@ public record ReviewResponseDto(
         String result,
         String userName,
         String createDate,
-        Evaluation expertise,
+        Expertise expertise,
         WorkExpertise workExpertise,
         String interviewDate
 )
@@ -28,7 +29,7 @@ public record ReviewResponseDto(
                 String.valueOf(review.getResult()),
                 review.getUser().getName(),
                 DateFormatter.formatDate(review.getCreateDate().toLocalDate()), // LocalDate 형식으로 포맷
-                review.getEvaluation(),
+                review.getExpertise(),
                 review.getWorkExpertise(),
                 DateFormatter.formatDate(review.getInterviewDate().toLocalDate()) // LocalDate 형식으로 포맷
         );

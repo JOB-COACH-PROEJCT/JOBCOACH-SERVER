@@ -19,8 +19,8 @@ public record ReviewDetailResponseDto(
         String tips,
         String userName,
         String createDate,
-        Evaluation expertise,
-        WorkExpertise workExpertise,
+        Evaluation  jobType,
+        WorkExpertise experience,
         String interviewDate
 ) {
     public static ReviewDetailResponseDto toDto(Review review) {

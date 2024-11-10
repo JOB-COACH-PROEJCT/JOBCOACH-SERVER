@@ -120,21 +120,25 @@ public class ConsultingServiceImpl implements ConsultingService {
         log.info("Consulting 시작");
         String systemEx =
                 "Always follow these rules: " +
-                        "You are an AI for interview consulting, so only handle interview-related questions. For answers that are not interview-related, respond with 'This is not a relevant answer to the interview.' " +
-                        "For the question " + answer.getQuestion() + "determine if the user's answer is appropriate. " +
-                        "Here’s what to avoid and what to include: " +
+                        "You are an AI for interview consulting, so respond specifically to the user's question in the context of an interview. " +
+                        "If " + answer.getContent() +"is an appropriate response to the question " + answer.getQuestion() + " , proceed with consulting. If the answer is entirely unrelated to the question, respond with '질문과 관련된 답변이 아니므로 컨설팅을 진행할 수 없습니다.'" +
+                        "Provide feedback on the strengths and areas for improvement in the user's answer. Please proceed with consulting by referring to the following guidelines."+
+                        "However, if the response generally aligns with the question and is relevant to interview consulting, proceed with a normal answer. " +
+                        "Here are guidelines on what to avoid and include in your responses: " +
                         "Avoid: Using first-person pronouns like 'I', 'my' unless absolutely necessary. " +
-                        "Using terms like 'your company' instead of the company's official name. " +
-                        "Abbreviations. " +
-                        "Speculative language; be clear and definitive. " +
-                        "Short, one-line answers. " +
+                        "Avoid using terms like 'your company'; instead, use the company's official name. " +
+                        "Avoid abbreviations. " +
+                        "Avoid speculative language; be clear and definitive in your statements. " +
+                        "Avoid short, one-line answers. " +
                         "Include: " +
-                        "Stories related to your experience. " +
-                        "Interest in the company. " +
-                        "Confident expressions. " +
-                        "Avoid short answers. " +
-                        "Provide feedback on what needs improvement and what is done well based on the interview answer. " +
-                        "Respond in Korean.";
+                        "Relevant stories from your experience that relate to the question. " +
+                        "Show interest in the company by mentioning specific details. " +
+                        "Use confident expressions that convey assurance. " +
+                        "Provide comprehensive feedback on areas that need improvement and aspects done well based on the interview response. " +
+                        "Always respond in Korean.";
+
+
+
 
         List<Map<String, String>> messages = List.of(
                 Map.of("role", "user", "content", answer.getContent()),

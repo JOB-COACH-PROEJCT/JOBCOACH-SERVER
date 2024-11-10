@@ -117,7 +117,7 @@ public class SignServiceImpl implements SignService {
         }
         logger.info("[getSignInResult] 패스워드 일치");
         logger.info("[getSignInResult] token 생성");
-        String token = jwtProvider.createToken(user.getEmail(), user.getRoles());
+        String token = jwtProvider.createToken(user.getEmail(), user.getUsername(), user.getRoles());
 
         logger.info("[getSignInResult] SignInResultDto 객체에 값 주입");
         return new SignInResponseDto(CommonResponse.LOGIN_SUCCESS.getCode(), CommonResponse.LOGIN_SUCCESS.getMsg(), token);

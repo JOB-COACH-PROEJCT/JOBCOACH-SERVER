@@ -1,22 +1,16 @@
 package org.v1.job_coach.domain.chatroom.api;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.v1.job_coach.domain.answer.domain.Answer;
 import org.v1.job_coach.domain.answer.dto.request.AnswerRequestDto;
 import org.v1.job_coach.domain.chatroom.application.ChatRoomService;
 import org.v1.job_coach.domain.chatroom.dto.response.AnswerResponseDto;
-import org.v1.job_coach.domain.chatroom.dto.response.QuestionResponseDto;
 import org.v1.job_coach.domain.consulting.application.ConsultingService;
-import org.v1.job_coach.domain.consulting.domain.Consulting;
 import org.v1.job_coach.global.dto.response.ResultResponseDto;
 import org.v1.job_coach.user.domain.User;
 

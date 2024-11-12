@@ -11,6 +11,8 @@ import java.util.List;
 public record DetailsChatRoomResponseDto(
         Long id,
         String roomName,
+        Long userPid,
+        String userName,
         ChatRoomStatus status,
         List<String> answers,
         List<String> questions
@@ -34,6 +36,8 @@ public record DetailsChatRoomResponseDto(
         return new DetailsChatRoomResponseDto(
                 chatRoom.getId(),
                 chatRoom.getRoomName(),
+                chatRoom.getUser().getUserPid(),
+                chatRoom.getUser().getName(),
                 chatRoom.getStatus(),
                 answerContentList,
                 questionContentList
